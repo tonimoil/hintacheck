@@ -11,3 +11,5 @@ Hintacheck on applikaatio, jonka avulla voit hakea puhelimen kameraa apuna käyt
 - Hakuhistoria
 - Hintatiedon tallennus (esim. hakee kaupassa ja tallentaa tekstimuotoisena sovellukseen)
 - Tutoriaali
+- Samankaltaisia tuotteita -toiminto
+- Sijaintitiedot
