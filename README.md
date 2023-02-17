@@ -2,7 +2,7 @@
 
 Hintacheck on applikaatio, jonka avulla voit hakea puhelimen kameraa apuna käyttäen tuotteen viivakoodilla tuotteen hintatietoja muilta jälleenmyyjiltä.
 
-## Asennus
+## Asennus ja ajo
 
 Asennus `npm install` ja ajo `npm run android`.
 
