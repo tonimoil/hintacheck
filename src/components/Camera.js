@@ -6,7 +6,7 @@ export function Camera( {navigation} ) {
       <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
         <Text>Kamera</Text>
         <Button
-          title="Siirry hakuhistoriaan"
+          title="Siirry hakuhistoriaan!"
           onPress={() => navigation.navigate('History')}
         />
       </View>
