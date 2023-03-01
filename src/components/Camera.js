@@ -29,8 +29,22 @@ export default function App() {
     );
   }
 
+  // Otetaan ylös viivakoodin tiedot; tyyppi ja data.
+  const eventViivakoodiLuettu = ({type, data}) => {
+    setSkannaaData(data);
+    console.log('Data: ' + data);
+    console.log('Tyyppi: ' + type);
+  }
+
+
+  // täytyy spesidioida mitä luetaan
+  // Jos mitään ei ole vielä skannattu, --> eventViivakoodiLuettu --> ei tehdä mitään
   return (
     <View style = {StyleSheet.container}>
+       <BarCodeScanner> 
+        style = {StyleSheet.absoluteFillObject}
+        onBarCodeScanned = {skannaaData ? undefined : eventViivakoodiLuettu} 
+      </BarCodeScanner>
       <StatusBar style = "auto"></StatusBar>
     </View>
   );
