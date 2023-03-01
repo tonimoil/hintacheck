@@ -1,14 +1,18 @@
-import { Text, View, Button } from 'react-native';
+import { StatusBar } from 'expo-status-bar';
+import { StyleSheet } from 'react-native';
+import React from 'react';
+import { BarCodeScanner } from 'expo-barcode-scanner';
 
-//Testi-kommentti
-export function Camera( {navigation} ) {
-    return (
-      <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
-        <Text>Kamera</Text>
-        <Button
-          title="Siirry hakuhistoriaan!"
-          onPress={() => navigation.navigate('History')}
-        />
-      </View>
-    );
+/**
+ * 
+ */
+export default function App() {
+  const [lupaMyonnetty, setLupaMyonnetty] = React.useState(false);
+
+  return (
+    <View style = {StyleSheet.container}>
+      <Text>Test</Text>
+      <StatusBar style = "auto"></StatusBar>
+    </View>
+  );
 }
