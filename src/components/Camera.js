@@ -1,51 +1,35 @@
 import { StatusBar } from 'expo-status-bar';
-import { StyleSheet } from 'react-native';
-import React from 'react';
+import { StyleSheet, Text, View, Button } from 'react-native';
+import React, { useEffect } from 'react';
 import { BarCodeScanner } from 'expo-barcode-scanner';
-import { View } from 'react-native-web';
 
-/**
- * 
- */
-export default function App() {
-  const [lupaMyonnetty, setLupaMyonnetty] = React.useState(false); // Lupa käyttää kameraa 
-  const [skannaaData, setSkannaaData] = React.useState(); // Skannattu data
+export default function Camera() {
 
-  useEffect(() => {
+  const [skannattuData, setSkannattuData] = React.useState();
 
-    (async() =>{
-      const {tilanne} = await BarCodeScanner.requestPermissionsAsync(); // jos lupa myonnetty, niin tilanne = myonnetty
-      setLupaMyonnetty(tilanne === "myonnetty");
-    })
+  const viivakoodiLuettu = ({type, data}) => {
+    setSkannattuData(data);
+    console.log(`Data: ${data}`);
+    console.log(`Type: ${type}`);
+  };
 
-  }, [])
-
-  // Jos lupaa ei ole myönnetty, niin kysytään sitä.
-  if (!lupaMyonnetty) {
-    return (
-      <View>
-        <Text>Voidaksesi käyttää sovellusta on sinun annettava sovellukselle lupa käyttää kameraa.</Text>
-      </View>
-    );
-  }
-
-  // Otetaan ylös viivakoodin tiedot; tyyppi ja data.
-  const eventViivakoodiLuettu = ({type, data}) => {
-    setSkannaaData(data);
-    console.log('Data: ' + data);
-    console.log('Tyyppi: ' + type);
-  }
-
-
-  // täytyy spesidioida mitä luetaan
-  // Jos mitään ei ole vielä skannattu, --> eventViivakoodiLuettu --> ei tehdä mitään
   return (
-    <View style = {StyleSheet.container}>
-       <BarCodeScanner> 
-        style = {StyleSheet.absoluteFillObject}
-        onBarCodeScanned = {skannaaData ? undefined : eventViivakoodiLuettu} 
-      </BarCodeScanner>
-      <StatusBar style = "auto"></StatusBar>
+    <View style={styles.container}>
+      <BarCodeScanner 
+        style={StyleSheet.absoluteFillObject}
+        onBarCodeScanned={skannattuData ? undefined : viivakoodiLuettu}
+        />
+      {skannattuData && <Button title='Skannaa uudestaan?' onPress={() => setSkannattuData(undefined)} />}
+      <StatusBar style="auto" />
     </View>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: '#fff',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+});
