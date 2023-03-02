@@ -35,15 +35,17 @@ export default function Camera() {
     console.log('Data: ' + data);
     console.log('Type: '+ type);
   };
-
+ 
   return (
     <View style={styles.container}>
-      <BarCodeScanner 
-        style={StyleSheet.absoluteFillObject}
-        onBarCodeScanned={skannattuData ? undefined : viivakoodiLuettu}
+      <View style={styles.viivakoodi}>
+        <BarCodeScanner 
+          style={{height: 600, width: 600}}
+          onBarCodeScanned={skannattuData ? undefined : viivakoodiLuettu}
         />
-      {skannattuData && <Button title='Skannaa uudestaan?' onPress={() => setSkannattuData(undefined)} />}
-      <StatusBar style="auto" />
+        </View>
+        <StatusBar style="auto" />
+      <View>{skannattuData && <Button title='Skannaa uudestaan?' onPress={() => setSkannattuData(undefined)} />}</View>
     </View>
   );
 }
@@ -57,7 +59,19 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
     alignItems: 'center',
     justifyContent: 'center',
+    backgroundColor: '#40E0D0',
+    
   },
+
+  viivakoodi: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    height: 200,
+    width: 300,
+    overflow: 'hidden',
+    borderRadius: 30,
+    marginBottom: 10,
+  }
 });
 
 
