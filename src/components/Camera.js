@@ -1,58 +1,72 @@
 import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, View, Button } from 'react-native';
+import { StyleSheet, View, Button, Text } from 'react-native';
 import React from 'react';
 import { BarCodeScanner } from 'expo-barcode-scanner';
+import { useIsFocused } from '@react-navigation/native';
 
-/**
- * Funktio Camera skannaa viivakoodit ja QR-koodit.
- * 
- * Käytössä Expo Barcode Scanner kirjasto.
- * Lisätietoja: https://docs.expo.dev/versions/v48.0.0/sdk/bar-code-scanner/
- * 
- * Tarkempi dokumentaatio: https://github.com/expo/expo/tree/sdk-48/packages/expo-barcode-scanner
- * 
- * Lisenssi ( MIT ):  https://github.com/expo/expo/blob/main/LICENSE
- * 
- * @returns viivakoodin
- */
-export default function Camera() {
+export default function Camera({ navigation }) {
 
-  const [skannattuData, setSkannattuData] = React.useState();
+  const [scannedData, setScannedData] = React.useState();
+  const isFocused = useIsFocused();
+  
+  //TODO: tee url:n asetus jotenkin järkeväksi...
+  const url = "192.168.32.181"
 
   /**
-   * Tulostetaan skannattu data. 
-   * BarCodeScanner tukee koodiformaatteja Androidilla:
-   * [aztec, codabar, code39, code128, datamatrix, ean13, ean8, itf14, maxicode,
-   * pdf417, rss14, rssexpanded, upc_a, upc_e, upc_ean, qr]
+   * Luetaan viivakoodi
    * 
    * Lisätietoja: https://docs.expo.dev/versions/v48.0.0/sdk/bar-code-scanner/
    * 
    * @param {type} viivakoodin_tyyppi
    * @param {data} viivakoodin_data
    */
-  const viivakoodiLuettu = ({type, data}) => {
-    setSkannattuData(data);
-    console.log('Data: ' + data);
-    console.log('Type: '+ type);
+  const readBarCode = ({type, data}) => {
+    setScannedData(data);
+    handleSearch(data)
+    //navigation.navigate("Results", {"data" : data, "type" : type})
+    //console.log('Data: ' + data);
+    //console.log('Type: '+ type);
   };
+
+  //TODO: Tänne virheidenkäsittelyä..
+  // - statuscode == 400 -> mitä tehdään?
+  // - statuscode == 500 -> mitä tehdään?
+  // - tsekataan myös, että paluuarvo on jotenkin järkevä, eli [{tulos}, {tulos}, ..., {tulos}]
+  // - jne.
+  const handleSearch = async (searchValue) => {
+    try {
+      const response = await fetch(`http://${url}:5000/search/${searchValue}`);
+      const results = await response.json();
+
+      navigation.navigate("Results", {"results" : results})
+    } catch (error) {
+      console.error(error);
+    }
+  }
  
   return (
-    <View style={styles.container}>
+    <>
+    {isFocused ? 
+    <View>
+      
       <View style={styles.viivakoodi}>
-        <BarCodeScanner 
-          style={{height: 600, width: 600}}
-          onBarCodeScanned={skannattuData ? undefined : viivakoodiLuettu}
-        />
-        </View>
-        <StatusBar style="auto" />
-      <View>{skannattuData && <Button title='Skannaa uudestaan?' onPress={() => setSkannattuData(undefined)} />}</View>
+
+        <BarCodeScanner style={{height: 400, width: 400}} onBarCodeScanned={scannedData ? undefined : readBarCode}>
+        </BarCodeScanner>
+      </View>
+    
+      <StatusBar style="auto" />
+
+      <View>
+        {scannedData && <Button title='Skannaa uudestaan?' onPress={() => setScannedData(undefined)}/>}
+      </View>
+
     </View>
-  );
+    : null}
+    </>
+    )
 }
 
-/**
- * Tyylit
- */
 const styles = StyleSheet.create({
   container: {
     flex: 1,
