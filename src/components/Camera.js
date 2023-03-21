@@ -25,8 +25,13 @@ export default function Camera({ navigation }) {
    * @param {data} viivakoodin_data
    */
   const readBarCode = ({type, data}) => {
+    if (type != 32) { 
+      alert("Viivakoodin tyyppi virheellinen tai skannaus ei onnistunut, kokeile uudelleen!")
+      return
+    }
+
     setScannedData(data);
-    handleSearch(data)
+    handleSearch(data);
   };
 
   //TODO: Tänne virheidenkäsittelyä..
