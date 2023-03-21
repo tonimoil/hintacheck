@@ -1,13 +1,18 @@
 import History from './History'
 import Camera from './Camera'
-import NoPermissions from './NoPermissions'
 import TopNavigationBar from './TopNavigationBar'
 import SearchResult from './SearchResult'
+
+/**
+ * Komponenttien indeksointia varten.
+ * 
+ * Kun teet uuden komponentin, niin importtaa se tähän tiedostoon
+ * ja lisää muuttuja export-lohkoon.
+ */
 
 export{
     History,
     Camera,
-    NoPermissions,
     TopNavigationBar,
     SearchResult
 }

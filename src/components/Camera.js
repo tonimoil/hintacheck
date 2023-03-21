@@ -1,5 +1,5 @@
 import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, View, Button, Text } from 'react-native';
+import { StyleSheet, View, Button } from 'react-native';
 import React from 'react';
 import { BarCodeScanner } from 'expo-barcode-scanner';
 import { useIsFocused } from '@react-navigation/native';
@@ -9,26 +9,29 @@ export default function Camera({ navigation }) {
   const [scannedData, setScannedData] = React.useState();
   const isFocused = useIsFocused();
   
-  //TODO: tee url:n asetus jotenkin järkeväksi...
+  //TODO: tee url:n asetus jotenkin järkeväksi. Esimerkiksi ympäristömuuttuja.
   const url = "192.168.32.181"
 
   /**
-   * Luetaan viivakoodi
+   * Luetaan viivakoodi ja suoritetaan haku.
    * 
+   * TODO: tarkasta, että data on EAN13.
+   * Jos ei ole, niin ilmoitus käyttäjälle, että viivakoodin luku ei
+   * onnistunut, tai ohjelmisto ei tue viivakoodin tyyppiä. Tämän jälkeen
+   * takaisin kameraan. vrt. painike "skannaa uudelleen".
+   *  
    * Lisätietoja: https://docs.expo.dev/versions/v48.0.0/sdk/bar-code-scanner/
-   * 
    * @param {type} viivakoodin_tyyppi
    * @param {data} viivakoodin_data
    */
   const readBarCode = ({type, data}) => {
     setScannedData(data);
     handleSearch(data)
-    //navigation.navigate("Results", {"data" : data, "type" : type})
-    //console.log('Data: ' + data);
-    //console.log('Type: '+ type);
   };
 
   //TODO: Tänne virheidenkäsittelyä..
+  // - virheiden/ilmoitusten kartoitus ja niiden pohjalta toiminnan
+  // rakentaminen. ts:
   // - statuscode == 400 -> mitä tehdään?
   // - statuscode == 500 -> mitä tehdään?
   // - tsekataan myös, että paluuarvo on jotenkin järkevä, eli [{tulos}, {tulos}, ..., {tulos}]
@@ -44,6 +47,14 @@ export default function Camera({ navigation }) {
     }
   }
  
+  //useIsFocused, muuttujana isFocused on navigation-paketin funktio, jolla
+  //voidaan tarkistaa, onko "view"/"screen" fokusoitu. Kamera menee jostain
+  //syystä epäkuntoon ilman tätä tarkistusta. Näytetään camera view, jos on
+  //fokusoitu, palautetaan tyhjä view muussa tapauksessa. Ratkaisua ei ole
+  //sen kummemmin tarkasteltu.
+  //TODO: Onko ratkaisusta haittaa, ja selvitä toiminta tarkemmin.
+  //
+  //TODO: tyylittely kuntoon.
   return (
     <>
     {isFocused ? 

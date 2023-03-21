@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, Button } from 'react-native';
+import { View } from 'react-native';
 import { TopNavigationBar, SearchResult } from '../components/index';
 
 export default function ResultsView ({ route, navigation }) {
@@ -11,10 +11,10 @@ export default function ResultsView ({ route, navigation }) {
 
     return (
         <View>
-        <TopNavigationBar buttons={buttons}/>
-        <Text>Hei</Text>
-        {results.map((e, i) => <SearchResult key={i} name={e["Name"]} url={e["Url"]}/>)}
-        
+            <TopNavigationBar buttons={buttons}/>
+            {results.map((e, i) =>
+                <SearchResult key={i} name={e["Name"]} url={e["Url"]}/>
+            )}
         </View>
     );
 };
