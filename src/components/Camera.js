@@ -10,7 +10,7 @@ export default function Camera({ navigation }) {
   const isFocused = useIsFocused();
   
   //TODO: tee url:n asetus jotenkin järkeväksi. Esimerkiksi ympäristömuuttuja.
-  const url = "192.168.32.181"
+  const url = "192.168.1.160"
 
   /**
    * Luetaan viivakoodi ja suoritetaan haku.
@@ -25,14 +25,18 @@ export default function Camera({ navigation }) {
    * @param {data} viivakoodin_data
    */
   const readBarCode = ({type, data}) => {
-    if (type != 32) { 
-      alert("Viivakoodin tyyppi virheellinen tai skannaus ei onnistunut, kokeile uudelleen!")
-      return
-    }
+
 
     setScannedData(data);
     handleSearch(data);
   };
+
+  const products = [
+    { Tuote: 'Tuote 1', Url: 'https://www.tuote1.com', Hinta: 2.50},
+    { Tuote: 'Tuote 2', Url: 'https://www.tuote2.com', Hinta: 2.70},
+    { Tuote: 'Tuote 3', Url: 'https://www.tuote3.com', Hinta: 3.60},
+    { Tuote: 'Tuote 4', Url: 'https://www.tuote4.com', Hinta: 1.60},
+  ];
 
   //TODO: Tänne virheidenkäsittelyä..
   // - virheiden/ilmoitusten kartoitus ja niiden pohjalta toiminnan
@@ -43,8 +47,11 @@ export default function Camera({ navigation }) {
   // - jne.
   const handleSearch = async (searchValue) => {
     try {
-      const response = await fetch(`http://${url}:5000/search/${searchValue}`);
-      const results = await response.json();
+      // const response = await fetch(`http://${url}:5000/search/${searchValue}`);
+      // const results = await response.json();
+
+      // lajitellaan tuotteet hinnan mukaan
+      const results = products.sort((a, b) => parseFloat(a.Hinta) - parseFloat(b.Hinta)); 
 
       navigation.navigate("Results", {"results" : results})
     } catch (error) {
