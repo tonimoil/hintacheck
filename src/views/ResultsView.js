@@ -15,7 +15,9 @@ export default function ResultsView ({ route, navigation }) {
       <ScrollView>
         {results.map((result, index) => (
           <View key={index} style={styles.resultContainer}>
-            <SearchResult tuote={result.Tuote} url={result.Url} hinta={result.Hinta}/>
+            <SearchResult product={result.Name} url={result.Url} 
+                //hinta={result.Hinta}
+            />
           </View>
         ))}
       </ScrollView>

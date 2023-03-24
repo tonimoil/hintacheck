@@ -10,7 +10,6 @@ import { NoPermissions, CameraView, HistoryView, ResultsView } from './src/views
  */
 export default function App() {
   const [permissions, setPermissions] = React.useState(false);
-  
   /**  
    * Välilehtien toimintaa varten, kts. 
    * https://reactnavigation.org/docs/getting-started/

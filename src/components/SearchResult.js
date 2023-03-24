@@ -1,18 +1,20 @@
 import React from 'react';
 import { StyleSheet, View, Text, Button } from 'react-native';
 
-export default function SearchResult({ tuote, url, hinta }) {
+export default function SearchResult({ product, url, price }) {
   return (
     <View style={styles.container}>
       <View style={styles.image}></View>
       <View style={styles.details}>
-        <Text style={styles.tuote}>{tuote}</Text>
+        <Text style={styles.product}>{product}</Text>
         <Text style={styles.url}>{url}</Text>
       </View>
-      <Text style={styles.hinta}>{hinta.toFixed(2)} €</Text>
+      <Text styles={styles.price}></Text>
     </View>
   );
 }
+
+//<Text style={styles.price}>{price.toFixed(2)} €</Text>
 
 // tyylit
 const styles = StyleSheet.create({
@@ -43,14 +45,14 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
   },
-  tuote: {
+  product: {
     textAlign: 'center',
   },
   url: {
     textAlign: 'center',
     marginTop: 5,
   },
-  hinta: {
+  price: {
     fontWeight: 'bold',
     fontSize: 16,
   },

@@ -3,14 +3,11 @@ import { StyleSheet, View, Button } from 'react-native';
 import React from 'react';
 import { BarCodeScanner } from 'expo-barcode-scanner';
 import { useIsFocused } from '@react-navigation/native';
+import Constants from 'expo-constants';
 
 export default function Camera({ navigation }) {
-
   const [scannedData, setScannedData] = React.useState();
   const isFocused = useIsFocused();
-  
-  //TODO: tee url:n asetus jotenkin järkeväksi. Esimerkiksi ympäristömuuttuja.
-  const url = "192.168.1.160"
 
   /**
    * Luetaan viivakoodi ja suoritetaan haku.
@@ -25,35 +22,49 @@ export default function Camera({ navigation }) {
    * @param {data} viivakoodin_data
    */
   const readBarCode = ({type, data}) => {
-
+    if (type != 32) { 
+      alert("Viivakoodin tyyppi virheellinen tai skannaus ei onnistunut, kokeile uudelleen!")
+      return
+    }
 
     setScannedData(data);
     handleSearch(data);
   };
 
-  const products = [
-    { Tuote: 'Tuote 1', Url: 'https://www.tuote1.com', Hinta: 2.50},
-    { Tuote: 'Tuote 2', Url: 'https://www.tuote2.com', Hinta: 2.70},
-    { Tuote: 'Tuote 3', Url: 'https://www.tuote3.com', Hinta: 3.60},
-    { Tuote: 'Tuote 4', Url: 'https://www.tuote4.com', Hinta: 1.60},
-  ];
-
-  //TODO: Tänne virheidenkäsittelyä..
-  // - virheiden/ilmoitusten kartoitus ja niiden pohjalta toiminnan
-  // rakentaminen. ts:
-  // - statuscode == 400 -> mitä tehdään?
-  // - statuscode == 500 -> mitä tehdään?
-  // - tsekataan myös, että paluuarvo on jotenkin järkevä, eli [{tulos}, {tulos}, ..., {tulos}]
-  // - jne.
   const handleSearch = async (searchValue) => {
     try {
-      // const response = await fetch(`http://${url}:5000/search/${searchValue}`);
-      // const results = await response.json();
+      const headers = {'Authorization' : 'Basic ' + process.env.AUTH}
+      const apiUrl = Constants.expoConfig.extra.apiUrl;
 
-      // lajitellaan tuotteet hinnan mukaan
-      const results = products.sort((a, b) => parseFloat(a.Hinta) - parseFloat(b.Hinta)); 
+      const response = await fetch(`${apiUrl}/search/${searchValue}`, {headers});
 
-      navigation.navigate("Results", {"results" : results})
+      if (response.status == 400) {
+        alert("Viivakoodilla ei löytynyt tuloksia! Kokeile uudelleen.")
+        return
+      }
+
+      if (response.status == 500) {
+        alert("Virhe pyyntöä käsiteltäessä. Kokeile uudelleen tai kokeile eri tuotetta.")
+        return
+      }
+
+      if (response.status == 503) {
+        alert("Palvelin ei ole tällä hetkellä tavoitettavissa, kokeile uudelleen myöhemmin.")
+        return
+      }
+
+      if (response.status = 200) {
+        const results = await response.json();
+
+        // lajitellaan tuotteet hinnan mukaan
+        //const results = products.sort((a, b) => parseFloat(a.Hinta) - parseFloat(b.Hinta)); 
+
+        navigation.navigate("Results", {"results" : results})
+        return
+      }
+
+      alert("Tapahtui jokin virhe.")
+      return
     } catch (error) {
       console.error(error);
     }
