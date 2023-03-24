@@ -1,13 +1,15 @@
 import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, View, Button } from 'react-native';
+import { Button, Dimensions, StyleSheet, Text, View } from 'react-native';
 import React from 'react';
 import { BarCodeScanner } from 'expo-barcode-scanner';
 import { useIsFocused } from '@react-navigation/native';
-import Constants from 'expo-constants';
+import { API_URL, API_AUTH } from '@env';
 
 export default function Camera({ navigation }) {
   const [scannedData, setScannedData] = React.useState();
+  const [loading, setLoading] = React.useState(false)
   const isFocused = useIsFocused();
+  const { width, height } = Dimensions.get('window');
 
   /**
    * Luetaan viivakoodi ja suoritetaan haku.
@@ -23,33 +25,31 @@ export default function Camera({ navigation }) {
    */
   const readBarCode = ({type, data}) => {
     if (type != 32) { 
-      alert("Viivakoodin tyyppi virheellinen tai skannaus ei onnistunut, kokeile uudelleen!")
+      alert("Viivakoodin tyyppi virheellinen tai skannaus ei onnistunut, kokeile uudelleen!");
       return
     }
-
     setScannedData(data);
     handleSearch(data);
   };
 
   const handleSearch = async (searchValue) => {
     try {
-      const headers = {'Authorization' : 'Basic ' + process.env.AUTH}
-      const apiUrl = Constants.expoConfig.extra.apiUrl;
-
-      const response = await fetch(`${apiUrl}/search/${searchValue}`, {headers});
+      setLoading(true)
+      const headers = {'Authorization' : 'Basic ' + API_AUTH}
+      const response = await fetch(`${API_URL}/search/${searchValue}`, {headers});
 
       if (response.status == 400) {
-        alert("Viivakoodilla ei löytynyt tuloksia! Kokeile uudelleen.")
+        alert("Viivakoodilla ei löytynyt tuloksia! Kokeile uudelleen.");
         return
       }
 
       if (response.status == 500) {
-        alert("Virhe pyyntöä käsiteltäessä. Kokeile uudelleen tai kokeile eri tuotetta.")
+        alert("Virhe pyyntöä käsiteltäessä. Kokeile uudelleen tai kokeile eri tuotetta.");
         return
       }
 
       if (response.status == 503) {
-        alert("Palvelin ei ole tällä hetkellä tavoitettavissa, kokeile uudelleen myöhemmin.")
+        alert("Palvelin ei ole tällä hetkellä tavoitettavissa, kokeile uudelleen myöhemmin.");
         return
       }
 
@@ -59,14 +59,16 @@ export default function Camera({ navigation }) {
         // lajitellaan tuotteet hinnan mukaan
         //const results = products.sort((a, b) => parseFloat(a.Hinta) - parseFloat(b.Hinta)); 
 
-        navigation.navigate("Results", {"results" : results})
+        navigation.navigate("Results", {"results" : results});
         return
       }
 
-      alert("Tapahtui jokin virhe.")
+      alert("Tapahtui jokin virhe.");
       return
     } catch (error) {
       console.error(error);
+    } finally {
+      setLoading(false)
     }
   }
  
@@ -80,46 +82,44 @@ export default function Camera({ navigation }) {
   //TODO: tyylittely kuntoon.
   return (
     <>
+    { loading ? <Text>Loading...</Text> :
+    <>
     {isFocused ? 
-    <View>
-      
-      <View style={styles.viivakoodi}>
+      <View style={{flex:1,backgroundColor:'white'}}>
+        <View style={{flex:1,alignItems:'center',justifyContent:'center',alignSelf:'stretch'}}>
+          <BarCodeScanner style={{width: width*0.9, height: height*0.85}} onBarCodeScanned={scannedData ? undefined : readBarCode}></BarCodeScanner>
+        </View>
 
-        <BarCodeScanner style={{height: 400, width: 400}} onBarCodeScanned={scannedData ? undefined : readBarCode}>
-        </BarCodeScanner>
+        <StatusBar style='auto'/>
+
+        <View style={{justifyContent:'space-around'}}>
+          {scannedData && <Button title='Skannaa uudestaan?' onPress={() => setScannedData(undefined)}/>}
+        </View>
+
       </View>
-    
-      <StatusBar style="auto" />
-
-      <View>
-        {scannedData && <Button title='Skannaa uudestaan?' onPress={() => setScannedData(undefined)}/>}
-      </View>
-
-    </View>
     : null}
+    </>
+    }
     </>
     )
 }
 
+
+
+
 const styles = StyleSheet.create({
+  camera: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    overflow: 'hidden',
+  },
   container: {
     flex: 1,
-    backgroundColor: '#fff',
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: '#40E0D0',
-    
+    position: 'relative',
   },
-
-  viivakoodi: {
-    alignItems: 'center',
-    justifyContent: 'center',
-    height: 200,
-    width: 300,
-    overflow: 'hidden',
-    borderRadius: 30,
-    marginBottom: 10,
-  }
 });
 
 

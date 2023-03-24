@@ -8,7 +8,7 @@ export default function CameraView ({ navigation }) {
   ];
 
   return (
-    <View>
+    <View style={{flex:1,backgroundColor:'white'}}>
       <TopNavigationBar buttons={buttons} />
       <Camera navigation={navigation}/>
     </View>
