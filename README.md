@@ -6,6 +6,8 @@ Hintacheck on applikaatio, jonka avulla voit hakea puhelimen kameraa apuna käyt
 
 Asennus `npm install` ja ajo `npm run android`.
 
+Ajo expolla `npx expo start`
+
 ## Toimintoja
 
 - Viivakoodin lukeminen kameralla
