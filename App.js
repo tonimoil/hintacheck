@@ -1,8 +1,11 @@
 import React from 'react';
-import { NavigationContainer } from '@react-navigation/native';
+
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { BarCodeScanner } from 'expo-barcode-scanner';
 import { NoPermissions, CameraView, HistoryView, ResultsView } from './src/views/index';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
+import TopBar from './src/components/TopNavigationBar';
+
 
 /**
  * TODO: puhelimeen varastoinnin tekeminen historiaa varten. Käytetään esimerkiksi
@@ -35,16 +38,12 @@ export default function App() {
      * oikeuksia kameraan, käyttäjä ohjataan ei oikeuksia sivulle.
      */
 
-    <NavigationContainer>
+    <SafeAreaProvider>
     {permissions ?
-    <Stack.Navigator screenOptions={{headerShown: true}}>
-      <Stack.Screen name="Camera" component={CameraView} />
-      <Stack.Screen name="History" component={HistoryView} />
-      <Stack.Screen name="Results" component={ResultsView} />
-    </Stack.Navigator>
+      <TopBar/>
     :
     <NoPermissions/> 
     }
-  </NavigationContainer>
+  </SafeAreaProvider>
 );
 }
