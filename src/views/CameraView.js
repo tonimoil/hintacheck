@@ -1,16 +1,17 @@
 import React from 'react';
-import { View } from 'react-native';
+import { SafeAreaView } from 'react-native';
 import { TopNavigationBar, Camera } from '../components/index';
 
 export default function CameraView ({ navigation }) {
   const buttons = [
-    { label: 'Historia', onPress: () => navigation.navigate("History") }
+    { label: 'Results', onPress: () => navigation.navigate("History") }
   ];
 
   return (
-    <View style={{flex:1,backgroundColor:'white'}}>
-      <TopNavigationBar buttons={buttons} />
+    <SafeAreaView style={{flex:1,backgroundColor:'#3FC3D2'}}>
+      <TopNavigationBar style={{flex:1,backgroundColor:'#3FC3D2'}} buttons={buttons} />
       <Camera navigation={navigation}/>
-    </View>
+    </SafeAreaView>
   );
 };
+

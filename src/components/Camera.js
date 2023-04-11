@@ -1,5 +1,5 @@
 import { StatusBar } from 'expo-status-bar';
-import { Button, Dimensions, StyleSheet, Text, View } from 'react-native';
+import { Button, Dimensions, StyleSheet, Text, View, TouchableOpacity } from 'react-native';
 import React from 'react';
 import { BarCodeScanner } from 'expo-barcode-scanner';
 import { useIsFocused } from '@react-navigation/native';
@@ -71,6 +71,18 @@ export default function Camera({ navigation }) {
       setLoading(false)
     }
   }
+
+  // Luodaan pyöreä button
+  const RoundCameraButton = ({ onPress }) => {
+    return (
+      <View style={styles.container}>
+      <TouchableOpacity onPress={onPress} style={styles.button}>
+        <View />
+      </TouchableOpacity>
+    </View>
+    );
+  };
+
  
   //useIsFocused, muuttujana isFocused on navigation-paketin funktio, jolla
   //voidaan tarkistaa, onko "view"/"screen" fokusoitu. Kamera menee jostain
@@ -86,14 +98,23 @@ export default function Camera({ navigation }) {
     <>
     {isFocused ? 
       <View style={{flex:1,backgroundColor:'white'}}>
-        <View style={{flex:1,alignItems:'center',justifyContent:'center',alignSelf:'stretch'}}>
-          <BarCodeScanner style={{width: width*0.9, height: height*0.85}} onBarCodeScanned={scannedData ? undefined : readBarCode}></BarCodeScanner>
+        <View style={{flex:1,alignItems:'center',justifyContent:'center',alignSelf:'stretch', backgroundColor: '#3FC3D2'}}>
+          <BarCodeScanner style={{
+            width: Dimensions.get('screen').width,
+            height: Dimensions.get('screen').height,}} 
+            onBarCodeScanned={scannedData ? undefined : readBarCode}></BarCodeScanner>
         </View>
 
-        <StatusBar style='auto'/>
+        <View>
+          <StatusBar
+            backgroundColor='#3FC3D2'
+            barStyle="light-content"/>
+        </View>
 
-        <View style={{justifyContent:'space-around'}}>
-          {scannedData && <Button title='Skannaa uudestaan?' onPress={() => setScannedData(undefined)}/>}
+        
+
+        <View >
+          {scannedData && <RoundCameraButton onPress={() => setScannedData(undefined)}/>}
         </View>
 
       </View>
@@ -117,8 +138,18 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     alignItems: 'center',
-    justifyContent: 'center',
+    justifyContent: 'flex-end',
     position: 'relative',
+  },
+  button: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    width: 84,
+    height: 84,
+    borderRadius: 62,
+    backgroundColor: 'rgba(255, 255, 255, 0.5)',
+    shadowColor: 'black',
+    marginBottom: 32,
   },
 });
 
