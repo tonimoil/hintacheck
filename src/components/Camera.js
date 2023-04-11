@@ -4,6 +4,9 @@ import React from 'react';
 import { BarCodeScanner } from 'expo-barcode-scanner';
 import { useIsFocused } from '@react-navigation/native';
 import { API_URL, API_AUTH } from '@env';
+import { LinearGradient } from 'expo-linear-gradient';
+import { TouchableOpacity } from 'react-native';
+import Icon from 'react-native-vector-icons/FontAwesome';
 
 export default function Camera({ navigation }) {
   const [scannedData, setScannedData] = React.useState();
@@ -31,6 +34,7 @@ export default function Camera({ navigation }) {
     setScannedData(data);
     handleSearch(data);
   };
+  
 
   const handleSearch = async (searchValue) => {
     try {
@@ -71,6 +75,8 @@ export default function Camera({ navigation }) {
       setLoading(false)
     }
   }
+
+
  
   //useIsFocused, muuttujana isFocused on navigation-paketin funktio, jolla
   //voidaan tarkistaa, onko "view"/"screen" fokusoitu. Kamera menee jostain
@@ -82,44 +88,88 @@ export default function Camera({ navigation }) {
   //TODO: tyylittely kuntoon.
   return (
     <>
-    { loading ? <Text>Loading...</Text> :
-    <>
-    {isFocused ? 
-      <View style={{flex:1,backgroundColor:'white'}}>
-        <View style={{flex:1,alignItems:'center',justifyContent:'center',alignSelf:'stretch'}}>
-          <BarCodeScanner style={{width: width*0.9, height: height*0.85}} onBarCodeScanned={scannedData ? undefined : readBarCode}></BarCodeScanner>
-        </View>
+      {loading ? (
+        <Text>Loading...</Text>
+      ) : (
+        <>
+          {isFocused ? (
+            <View style={styles.container}>
+              <View style={styles.cameraWrapper}>
+               <BarCodeScanner style={styles.camera} ></BarCodeScanner> 
+                {/* Overlay komponentti */}
+                <LinearGradient
+                  colors={['rgba(0, 0, 0, 0.5)', 'transparent', 'rgba(0, 0, 0, 0.5)']}
+                  start={[0, 0]}
+                  end={[0, 1]}
+                  style={styles.overlay}
+                >
+                  <View style={styles.boxOutline} />
+                </LinearGradient>
+              </View>
 
-        <StatusBar style='auto'/>
-
-        <View style={{justifyContent:'space-around'}}>
-          {scannedData && <Button title='Skannaa uudestaan?' onPress={() => setScannedData(undefined)}/>}
-        </View>
-
-      </View>
-    : null}
+              <View style={styles.cyanBlock}>
+              <TouchableOpacity style={styles.placeholder} onPress={readBarCode}>
+              {/* Tähän voi lisätä esim. kameran ikonin */}
+              </TouchableOpacity>
+              </View>
+            </View>
+          ) : null}
+        </>
+      )}
     </>
-    }
-    </>
-    )
+  );
 }
 
-
-
+const { width, height } = Dimensions.get('window');
+const cameraSize = Math.min(width, height) * 1;
 
 const styles = StyleSheet.create({
-  camera: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-    overflow: 'hidden',
-  },
   container: {
     flex: 1,
+    backgroundColor: 'white',
+  },
+  cameraWrapper: {
+    flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
-    position: 'relative',
+  },
+  camera: {
+    width: '100%',
+    height: '100%',
+  },
+  overlay: {
+    position: 'absolute',
+    left: 0,
+    top: 0,
+    right: 0,
+    bottom: 0,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  boxOutline: {
+    width: '80%',
+    height: '20%',
+    borderColor: 'white',
+    borderWidth: 2,
+    borderRadius: 10,
+  },
+  cyanBlock: {
+    position: 'absolute',
+    left: 0,
+    bottom: 0,
+    right: 0,
+    height: '20%',
+    backgroundColor: 'cyan',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  placeholder: {
+    width: 80,
+    height: 80,
+    borderColor: 'white',
+    borderWidth: 2,
+    borderRadius: 40,
+    overflow: 'hidden',
   },
 });
-
 
