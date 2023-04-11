@@ -2,16 +2,21 @@ import React from 'react';
 import { View, ScrollView, StyleSheet } from 'react-native';
 import { TopNavigationBar, SearchResult } from '../components/index';
 
-export default function ResultsView ({ route, navigation }) {
-  const { results } = route.params;
+export default function ResultsView ({ route }) {
+  results = [{Name : "Tietoja ei ole vielä haettu", Url : ""}]
 
-  const buttons = [
-    { label: 'Kamera', onPress: () => navigation.navigate("Camera") }
-  ];
+  if (route.params != undefined){
+    results = route.params.results  
+  }
 
+  /*
+    const buttons = [
+      { label: 'Kamera', onPress: () => navigation.navigate("Camera") }
+    ];
+  */
   return (
     <View style={styles.container}>
-      <TopNavigationBar buttons={buttons}/>
+      
       <ScrollView>
         {results.map((result, index) => (
           <View key={index} style={styles.resultContainer}>

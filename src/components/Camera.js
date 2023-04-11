@@ -55,6 +55,7 @@ export default function Camera({ navigation }) {
 
       if (response.status = 200) {
         const results = await response.json();
+        console.log(results)
 
         // lajitellaan tuotteet hinnan mukaan
         //const results = products.sort((a, b) => parseFloat(a.Hinta) - parseFloat(b.Hinta)); 
@@ -110,8 +111,6 @@ export default function Camera({ navigation }) {
             backgroundColor='#3FC3D2'
             barStyle="light-content"/>
         </View>
-
-        
 
         <View >
           {scannedData && <RoundCameraButton onPress={() => setScannedData(undefined)}/>}

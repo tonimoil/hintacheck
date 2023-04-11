@@ -1,6 +1,6 @@
 import History from './History'
 import Camera from './Camera'
-import TopNavigationBar from './TopNavigationBar'
+//import TopNavigationBar from './TopNavigationBar'
 import SearchResult from './SearchResult'
 
 /**
@@ -13,6 +13,5 @@ import SearchResult from './SearchResult'
 export{
     History,
     Camera,
-    TopNavigationBar,
     SearchResult
 }
