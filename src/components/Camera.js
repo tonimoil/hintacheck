@@ -106,12 +106,6 @@ export default function Camera({ navigation }) {
             onBarCodeScanned={scannedData ? undefined : readBarCode}></BarCodeScanner>
         </View>
 
-        <View>
-          <StatusBar
-            backgroundColor='#3FC3D2'
-            barStyle="light-content"/>
-        </View>
-
         <View >
           {scannedData && <RoundCameraButton onPress={() => setScannedData(undefined)}/>}
         </View>

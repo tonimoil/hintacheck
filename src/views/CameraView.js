@@ -11,7 +11,6 @@ export default function CameraView ({ navigation }) {
 
   return (
     <SafeAreaView style={{flex:1,backgroundColor:'#3FC3D2'}}>
-      <TopNavigationBar style={{flex:1,backgroundColor:'#3FC3D2'}} buttons={buttons} />
       <Camera navigation={navigation}/>
     </SafeAreaView>
   );
