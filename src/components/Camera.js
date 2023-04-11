@@ -55,6 +55,7 @@ export default function Camera({ navigation }) {
 
       if (response.status = 200) {
         const results = await response.json();
+        console.log(results)
 
         // lajitellaan tuotteet hinnan mukaan
         //const results = products.sort((a, b) => parseFloat(a.Hinta) - parseFloat(b.Hinta)); 
@@ -89,8 +90,6 @@ export default function Camera({ navigation }) {
         <View style={{flex:1,alignItems:'center',justifyContent:'center',alignSelf:'stretch'}}>
           <BarCodeScanner style={{width: width*0.9, height: height*0.85}} onBarCodeScanned={scannedData ? undefined : readBarCode}></BarCodeScanner>
         </View>
-
-        <StatusBar style='auto'/>
 
         <View style={{justifyContent:'space-around'}}>
           {scannedData && <Button title='Skannaa uudestaan?' onPress={() => setScannedData(undefined)}/>}
