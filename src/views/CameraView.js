@@ -2,7 +2,7 @@ import React from 'react';
 import { View } from 'react-native';
 import Camera from '../components/Camera';
 
-export default function CameraView (/*{ navigation }*/) {
+export default function CameraView ({ navigation }) {
   /*
   const buttons = [
     { label: 'Historia', onPress: () => navigation.navigate("History") }
@@ -12,7 +12,7 @@ export default function CameraView (/*{ navigation }*/) {
   return (
     <View style={{flex:1,backgroundColor:'white'}}>
   
-      <Camera /*navigation={navigation}*//>
+      <Camera navigation={navigation}/>
     </View>
   );
 };

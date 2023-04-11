@@ -4,6 +4,7 @@ import { NavigationContainer } from '@react-navigation/native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import HistoryView from '../views/HistoryView';
+import ResultsView from '../views/ResultsView';
 import CameraView from '../views/CameraView';
 import HistoryViewCopy from '../views/HistoryViewCopy';
 //import ResultsView from '../views/ResultsView';
@@ -47,7 +48,7 @@ const TopBar = () => {
         <Tab.Screen name="Scanner" component={CameraView}  />
         <Tab.Screen name="History" component={HistoryView} />
 
-        <Tab.Screen name="Results" component={SearchResult} /> 
+        <Tab.Screen name="Results" component={ResultsView} /> 
        
         <Tab.Screen name="History2" component={HistoryViewCopy} />
       </Tab.Navigator>
