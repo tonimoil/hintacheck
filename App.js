@@ -3,6 +3,9 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { BarCodeScanner } from 'expo-barcode-scanner';
 import { NoPermissions, CameraView, HistoryView, ResultsView } from './src/views/index';
+import { TopNavigationBar } from './src/components';
+import { View } from 'react-native';
+import { Text, TouchableOpacity } from 'react-native';
 
 /**
  * TODO: puhelimeen varastoinnin tekeminen historiaa varten. Käytetään esimerkiksi
@@ -23,7 +26,7 @@ export default function App() {
       setPermissions(status === 'granted');
     })();
   }, []);
-  
+
   return (
     /**
      * NavigationContainer sisältää Stack.Screen komponentteja.
@@ -34,10 +37,17 @@ export default function App() {
      * permissions muttujan ollessa false, eli käyttäjä ei ole antanut
      * oikeuksia kameraan, käyttäjä ohjataan ei oikeuksia sivulle.
      */
-
     <NavigationContainer>
     {permissions ?
-    <Stack.Navigator screenOptions={{headerShown: true}}>
+    <Stack.Navigator 
+      screenOptions={{
+        animation: 'none',
+        headerTitle: "",
+        headerLeft : () => (<View></View>),
+        headerRight: () => (
+          <TopNavigationBar/>
+        ),
+      }}>
       <Stack.Screen name="Camera" component={CameraView} />
       <Stack.Screen name="History" component={HistoryView} />
       <Stack.Screen name="Results" component={ResultsView} />

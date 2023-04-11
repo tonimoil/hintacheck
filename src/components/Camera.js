@@ -2,14 +2,14 @@ import { StatusBar } from 'expo-status-bar';
 import { Button, Dimensions, StyleSheet, Text, View } from 'react-native';
 import React from 'react';
 import { BarCodeScanner } from 'expo-barcode-scanner';
-import { useIsFocused } from '@react-navigation/native';
+import { useIsFocused, useNavigation } from '@react-navigation/native';
 import { API_URL, API_AUTH } from '@env';
 
-export default function Camera({ navigation }) {
+export default function Camera() {
   const [scannedData, setScannedData] = React.useState();
   const [loading, setLoading] = React.useState(false)
   const isFocused = useIsFocused();
-  const { width, height } = Dimensions.get('window');
+  const navigation = useNavigation()
 
   /**
    * Luetaan viivakoodi ja suoritetaan haku.
@@ -87,12 +87,10 @@ export default function Camera({ navigation }) {
     {isFocused ? 
       <View style={{flex:1,backgroundColor:'white'}}>
         <View style={{flex:1,alignItems:'center',justifyContent:'center',alignSelf:'stretch'}}>
-          <BarCodeScanner style={{width: width*0.9, height: height*0.85}} onBarCodeScanned={scannedData ? undefined : readBarCode}></BarCodeScanner>
+          <BarCodeScanner style={{width: 400, height: 400}} onBarCodeScanned={scannedData ? undefined : readBarCode}></BarCodeScanner>
         </View>
 
-        <StatusBar style='auto'/>
-
-        <View style={{justifyContent:'space-around'}}>
+        <View style={{justifyContent:'space-around', width: 400, height: 400}}>
           {scannedData && <Button title='Skannaa uudestaan?' onPress={() => setScannedData(undefined)}/>}
         </View>
 

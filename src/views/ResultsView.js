@@ -1,18 +1,19 @@
 import React from 'react';
 import { View, ScrollView, StyleSheet } from 'react-native';
-import { TopNavigationBar, SearchResult } from '../components/index';
+import { SearchResult } from '../components/index';
 
-export default function ResultsView ({ route, navigation }) {
-  const { results } = route.params;
+export default function ResultsView ({ route }) {
+  //const { results } = route.params;
 
-  const buttons = [
-    { label: 'Kamera', onPress: () => navigation.navigate("Camera") }
-  ];
+  const results = [{Name : "testi", Url : "testi"}]
 
   return (
-    <View style={styles.container}>
-      <TopNavigationBar buttons={buttons}/>
-      <ScrollView>
+    <View style={{flex: 1,
+      width: undefined,
+      height: undefined,}}>
+      <ScrollView style={{flex: 1,
+      width: undefined,
+      height: undefined,}}>
         {results.map((result, index) => (
           <View key={index} style={styles.resultContainer}>
             <SearchResult product={result.Name} url={result.Url} 

@@ -1,15 +1,12 @@
 import React from 'react';
 import { View } from 'react-native';
-import { TopNavigationBar, History } from '../components/index';
+import { History } from '../components/index';
 
-export default function CameraView ({ navigation }) {
-  const buttons = [
-    { label: 'Kamera', onPress: () => navigation.navigate("Camera") }
-  ];
-
+export default function CameraView () {
   return (
-    <View>
-      <TopNavigationBar buttons={buttons} />
+    <View style={{flex: 1,
+      width: undefined,
+      height: undefined,}}>
       <History/>
     </View>
   );
