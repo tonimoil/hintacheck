@@ -1,18 +1,34 @@
 import React from 'react';
-import { StyleSheet, View, Text, Button } from 'react-native';
+import { StyleSheet, View, Text, Button, Linking } from 'react-native';
+import { TouchableOpacity } from 'react-native';
 
 export default function SearchResult({ product, url, price }) {
+  const handlePress = () => {
+    Linking.canOpenURL(url)
+      .then((supported) => {
+        if (supported) {
+          Linking.openURL(url);
+        } else {
+          console.log("Avaaminen ei onnistu : " + url);
+        }
+      })
+      .catch((error) => console.error('Virhe sivun hakemisessa', error));
+  };
+
   return (
     <View style={styles.container}>
       <View style={styles.image}></View>
       <View style={styles.details}>
         <Text style={styles.product}>{product}</Text>
-        <Text style={styles.url}>{url}</Text>
+        <TouchableOpacity onPress={handlePress}>
+          <Text style={[styles.url, { textDecorationLine: 'underline' }]}>{url}</Text>
+        </TouchableOpacity>
       </View>
-      <Text styles={styles.price}></Text>
+      <Text style={styles.price}></Text>
     </View>
   );
 }
+
 
 //<Text style={styles.price}>{price.toFixed(2)} €</Text>
 

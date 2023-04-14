@@ -11,6 +11,7 @@ export default function Camera({ navigation }) {
   const isFocused = useIsFocused();
   const { width, height } = Dimensions.get('window');
 
+
   /**
    * Luetaan viivakoodi ja suoritetaan haku.
    * 
@@ -23,14 +24,34 @@ export default function Camera({ navigation }) {
    * @param {type} viivakoodin_tyyppi
    * @param {data} viivakoodin_data
    */
-  const readBarCode = ({type, data}) => {
-    if (type != 32) { 
-      alert("Viivakoodin tyyppi virheellinen tai skannaus ei onnistunut, kokeile uudelleen!");
-      return
+
+  
+  // tarkistaa, että skannattu koodi on tyyppiä ean13
+  // jos tyyppi on muu, tulee virheilmoitus
+  const readBarCode = ({ type, data }) => {
+    if (type !== BarCodeScanner.Constants.BarCodeType.ean13) {
+      setScannedData("error"); 
+      alert(
+        "Viivakoodin tyyppi virheellinen tai skannaus ei onnistunut",
+        "Kokeile uudelleen!",
+        [
+          {
+            text: "OK",
+            onPress: () => setScannedData(undefined),
+          },
+        ],
+        { cancelable: false }
+      );
+      return;
     }
     setScannedData(data);
     handleSearch(data);
   };
+  
+  
+  
+
+  
 
   const handleSearch = async (searchValue) => {
     try {
@@ -73,6 +94,8 @@ export default function Camera({ navigation }) {
     }
   }
 
+  
+
   // Luodaan pyöreä button
   const RoundCameraButton = ({ onPress }) => {
     return (
@@ -103,7 +126,7 @@ export default function Camera({ navigation }) {
           <BarCodeScanner style={{
             width: Dimensions.get('screen').width,
             height: Dimensions.get('screen').height,}} 
-            onBarCodeScanned={scannedData ? undefined : readBarCode}></BarCodeScanner>
+            onBarCodeScanned={scannedData === undefined ? readBarCode : undefined}></BarCodeScanner>
         </View>
 
         <View >
