@@ -2,11 +2,22 @@ import React, { useState, useEffect } from 'react';
 import { View, Text, ScrollView, TouchableOpacity, StyleSheet } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
+
+/**
+ * Tuotteiden esille tuominen AsyncStoragesta. Käytetään AsyncStorage pakettia.
+ * Asennetaan:
+ * npm install @react-native-async-storage/async-storage tai yarn add @react-native-async-storage/async-storage
+ * 
+ * Lisää tietoa: https://react-native-async-storage.github.io/async-storage/docs/api
+ * Lisenssi: MIT
+ */
 export default function HistoryView() {
   const [scannedData, setScannedData] = useState([]);
 
   //TODO: Tyylittely
   //TODO: Tuotteiden järjestys muuttaa käänteiseksi
+  //TODO: Saman tuotteen uudelleen skannaaminen ei lisää tuotetta AsyncStorageen.
+  //      Toisaalta tämä voi olla jopa hyvä asia.
   //TODO: Automaattinen datan poisto, jos ylittää esim. 10 tuotetta AsyncStoragessa.
   //      Tällä hetkellä saattaa kaatua, jos muistiin jää liikaa dataa tai sitten johtuu
   //      vain Expo Go sovelluksesta.
@@ -57,7 +68,7 @@ export default function HistoryView() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff',
+    backgroundColor: '#00ced1',
   },
   contentContainer: {
     paddingBottom: 50,
