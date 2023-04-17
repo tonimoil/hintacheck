@@ -2,6 +2,7 @@ import React from 'react';
 import { StyleSheet, View, Text, Button, Linking } from 'react-native';
 import { TouchableOpacity } from 'react-native';
 
+// TODO: linkit avautumaan sovelluksen sisäisesti?
 
 export default function SearchResult({ product, url, price }) {
 
