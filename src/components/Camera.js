@@ -4,6 +4,7 @@ import React from 'react';
 import { BarCodeScanner } from 'expo-barcode-scanner';
 import { useIsFocused } from '@react-navigation/native';
 import { API_URL, API_AUTH } from '@env';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export default function Camera({ navigation }) {
   const [scannedData, setScannedData] = React.useState();
@@ -49,10 +50,6 @@ export default function Camera({ navigation }) {
   };
   
   
-  
-
-  
-
   const handleSearch = async (searchValue) => {
     try {
       setLoading(true)
@@ -81,8 +78,29 @@ export default function Camera({ navigation }) {
         // lajitellaan tuotteet hinnan mukaan
         //const results = products.sort((a, b) => parseFloat(a.Hinta) - parseFloat(b.Hinta)); 
 
-        navigation.navigate("Results", {"results" : results});
-        return
+        AsyncStorage.setItem(searchValue, JSON.stringify(results), (e)=> {
+          if(e){
+              console.log("Error: " + e);
+              throw e;
+          }
+          console.log("Succes!");
+        }).catch((e)=> {
+            console.log("Error is: " + e);
+        });
+
+        try {
+          const value = await AsyncStorage.getItem(searchValue);
+          if (value !== null) {
+              // We have data!!
+              console.log("Data:");
+              console.log(JSON.parse(value));
+          }
+      } catch (error) {
+          // Error retrieving data
+      }
+      AsyncStorage.setItem(searchValue, JSON.stringify(results));
+      navigation.navigate("Results", {"results" : results});
+        return  
       }
 
       alert("Tapahtui jokin virhe.");
@@ -94,10 +112,8 @@ export default function Camera({ navigation }) {
     }
   }
 
-  
-
-  // Luodaan pyöreä button
-  const RoundCameraButton = ({ onPress }) => {
+  //Scan button
+  const ScanButton = ({ onPress }) => {
     return (
       <View style={styles.container}>
       <TouchableOpacity onPress={onPress} style={styles.button}>
@@ -107,7 +123,6 @@ export default function Camera({ navigation }) {
     );
   };
 
- 
   //useIsFocused, muuttujana isFocused on navigation-paketin funktio, jolla
   //voidaan tarkistaa, onko "view"/"screen" fokusoitu. Kamera menee jostain
   //syystä epäkuntoon ilman tätä tarkistusta. Näytetään camera view, jos on
@@ -130,7 +145,7 @@ export default function Camera({ navigation }) {
         </View>
 
         <View >
-          {scannedData && <RoundCameraButton onPress={() => setScannedData(undefined)}/>}
+          {scannedData && <ScanButton onPress={() => setScannedData(undefined)}/>}
         </View>
 
       </View>
@@ -140,9 +155,6 @@ export default function Camera({ navigation }) {
     </>
     )
 }
-
-
-
 
 const styles = StyleSheet.create({
   camera: {
