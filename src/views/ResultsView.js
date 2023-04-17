@@ -1,28 +1,22 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, ScrollView, StyleSheet } from 'react-native';
 import { TopNavigationBar, SearchResult } from '../components/index';
 
 export default function ResultsView ({ route }) {
-  results = [{Name : "Tietoja ei ole vielä haettu", Url : ""}]
+  const [results, setResults] = useState([]);
 
-  if (route.params != undefined){
-    results = route.params.results  
-  }
+  useEffect(() => {
+    if (route.params && route.params.results) {
+      setResults(route.params.results);
+    }
+  }, [route.params]);
 
-  /*
-    const buttons = [
-      { label: 'Kamera', onPress: () => navigation.navigate("Camera") }
-    ];
-  */
   return (
     <View style={styles.container}>
-      
       <ScrollView>
         {results.map((result, index) => (
           <View key={index} style={styles.resultContainer}>
-            <SearchResult product={result.Name} url={result.Url} 
-                //hinta={result.Hinta}
-            />
+            <SearchResult product={result.Name} url={result.Url} key ={result.Name} />
           </View>
         ))}
       </ScrollView>
@@ -33,12 +27,12 @@ export default function ResultsView ({ route }) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff'
+    backgroundColor: '#00ced1'
   },
   resultContainer: {
     marginVertical: 10,
     padding: 10,
-    backgroundColor: '#f2f2f2',
+    backgroundColor: '#00ced1',
     borderRadius: 5
   }
 });

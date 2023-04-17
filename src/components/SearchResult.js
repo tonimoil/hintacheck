@@ -2,7 +2,11 @@ import React from 'react';
 import { StyleSheet, View, Text, Button, Linking } from 'react-native';
 import { TouchableOpacity } from 'react-native';
 
+
 export default function SearchResult({ product, url, price }) {
+
+// käsittelee käyttäjän painalluksen, kun URL-linkkiä painetaan
+// Linking 
   const handlePress = () => {
     Linking.canOpenURL(url)
       .then((supported) => {
@@ -15,20 +19,35 @@ export default function SearchResult({ product, url, price }) {
       .catch((error) => console.error('Virhe sivun hakemisessa', error));
   };
 
+  // erittelee saadusta url-linkistä etu- ja takapäätteet pois
+  // painettavassa linkissä vain kaupan nimi
+  const displayUrl = () => {
+    try {
+      const pattern = /^(?:https?:\/\/)?(?:www\.)?([^\/]+)(?:\.com|\.fi)/;
+      const matches = url.match(pattern);
+
+      return matches && matches[1] ? matches[1].toUpperCase() : url;
+    } catch (error) {
+      console.error('Error parsing URL:', error);
+      return url;
+    }
+  };
+
   return (
     <View style={styles.container}>
       <View style={styles.image}></View>
-      <View style={styles.details}>
-        <Text style={styles.product}>{product}</Text>
-        <TouchableOpacity onPress={handlePress}>
-          <Text style={[styles.url, { textDecorationLine: 'underline' }]}>{url}</Text>
-        </TouchableOpacity>
-      </View>
-      <Text style={styles.price}></Text>
+      {(product || url) && (
+        <View style={styles.details}>
+          <Text style={styles.product}>{product}</Text>
+          <TouchableOpacity onPress={handlePress}>
+            <Text style={[styles.url, { textDecorationLine: 'underline' }]}>{displayUrl()}</Text>
+          </TouchableOpacity>
+          <Text style={styles.price}></Text>
+        </View>
+      )}
     </View>
   );
 }
-
 
 //<Text style={styles.price}>{price.toFixed(2)} €</Text>
 
@@ -37,8 +56,8 @@ const styles = StyleSheet.create({
   container: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginHorizontal: 20,
-    marginVertical: 10,
+    marginHorizontal: 2,
+    marginVertical: 2,
     borderRadius: 5,
     backgroundColor: '#f2f2f2',
     shadowColor: '#000',
