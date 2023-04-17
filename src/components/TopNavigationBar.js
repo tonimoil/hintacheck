@@ -2,26 +2,16 @@ import React from 'react';
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
 import { NavigationContainer } from '@react-navigation/native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-
 import HistoryView from '../views/HistoryView';
 import ResultsView from '../views/ResultsView';
 import CameraView from '../views/CameraView';
-import HistoryViewCopy from '../views/HistoryViewCopy';
-//import ResultsView from '../views/ResultsView';
-import SearchResult from './SearchResult';
 
 const Tab = createMaterialTopTabNavigator();
-
-
-// Sivun vaihtaminen jostain muusta näkymästä takaisin kameraan on hidasta. 
-// Tämä johtunee siitä että kamera avataan aina uudestaan.
-// Ratkaisuehdotus: Sovelluksen ollessa päällä kamera olisi kokoajan päällä.
 
     //TODO: permissions
     //TODO: SMOOTH transitio cameran ja muiden välillä
     //Menee epäkuntoon, jos poistaa isFocused
     //TODO: sivun vaihto resultsviewiin
-
 /**
  * Ylä/alapalkin navigaation toteutus. 
  * Jotta navigointi toimii kunnolla on asennettava tarvittavat paketit.
@@ -46,11 +36,8 @@ const TopBar = () => {
         }}
         >
         <Tab.Screen name="Scanner" component={CameraView}  />
-        <Tab.Screen name="History" component={HistoryView} />
-
         <Tab.Screen name="Results" component={ResultsView} /> 
-       
-        <Tab.Screen name="History2" component={HistoryViewCopy} />
+        <Tab.Screen name="History" component={HistoryView} />
       </Tab.Navigator>
     </NavigationContainer>
   );
