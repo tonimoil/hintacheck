@@ -5,6 +5,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import HistoryView from '../views/HistoryView';
 import ResultsView from '../views/ResultsView';
 import CameraView from '../views/CameraView';
+import { MyProvider } from '../views/MyContext';
 
 const Tab = createMaterialTopTabNavigator();
 
@@ -27,18 +28,20 @@ const TopBar = () => {
     const insets = useSafeAreaInsets();
   return (
     <NavigationContainer>
-      <Tab.Navigator
-        initialRouteName="Scanner"
-        screenOptions={{
+      <MyProvider>
+        <Tab.Navigator
+          initialRouteName="Scanner"
+          screenOptions={{
             tabBarActiveTintColor: "white",
             tabBarLabelStyle: { fontSize: 12 },
             tabBarStyle: { backgroundColor: "#3FC3D2", marginTop: insets.top},
-        }}
-        >
-        <Tab.Screen name="Scanner" component={CameraView}  />
-        <Tab.Screen name="Results" component={ResultsView} /> 
-        <Tab.Screen name="History" component={HistoryView} />
-      </Tab.Navigator>
+          }}
+          >
+          <Tab.Screen name="Scanner" component={CameraView}  />
+          <Tab.Screen name="Results" component={ResultsView} /> 
+          <Tab.Screen name="History" component={HistoryView} />
+        </Tab.Navigator>
+      </MyProvider>
     </NavigationContainer>
   );
 };

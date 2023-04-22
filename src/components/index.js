@@ -1,6 +1,5 @@
 import History from './History'
 import Camera from './Camera'
-//import TopNavigationBar from './TopNavigationBar'
 import SearchResult from './SearchResult'
 
 /**

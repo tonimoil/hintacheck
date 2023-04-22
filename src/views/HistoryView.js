@@ -1,7 +1,8 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { View, Text, ScrollView, TouchableOpacity, StyleSheet } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-
+import { MyContext } from './MyContext';
+import { API_URL, API_AUTH } from '@env';
 
 /**
  * Tuotteiden esille tuominen AsyncStoragesta. Käytetään AsyncStorage pakettia.
@@ -11,32 +12,26 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
  * Lisää tietoa: https://react-native-async-storage.github.io/async-storage/docs/api
  * Lisenssi: MIT
  */
-export default function HistoryView() {
+export default function HistoryView({ navigation }) {
   const [scannedData, setScannedData] = useState([]);
-
-  //TODO: Tyylittely
-  //TODO: Tuotteiden järjestys muuttaa käänteiseksi
-  //TODO: Saman tuotteen uudelleen skannaaminen ei lisää tuotetta AsyncStorageen.
-  //      Toisaalta tämä voi olla jopa hyvä asia.
-  //TODO: Automaattinen datan poisto, jos ylittää esim. 10 tuotetta AsyncStoragessa.
-  //      Tällä hetkellä saattaa kaatua, jos muistiin jää liikaa dataa tai sitten johtuu
-  //      vain Expo Go sovelluksesta.
+  const { myArray, setMyArray } = useContext(MyContext);
 
   useEffect(() => {
-    // Retrieve all keys from AsyncStorage
-    AsyncStorage.getAllKeys()
-      .then(async (keys) => {
-        // Retrieve all values from AsyncStorage
-        const values = await AsyncStorage.multiGet(keys);
-        // Map over the values to parse the JSON and add them to the state
-        const data = values.map((value) => JSON.parse(value[1]));
-        setScannedData(data);
-      })
-      .catch((error) => console.error(error));
-  }, []);
+    const saveData = async () => {     
+      try {
+        await AsyncStorage.setItem('myArray', JSON.stringify(myArray));
+      } catch (error) {
+        console.log(error);
+      }
+    };
+    saveData();
+
+    setScannedData(myArray);
+  }, [myArray])
 
   const clearAsyncStorage = async () => {
     try {
+      setMyArray([])
       await AsyncStorage.clear();
       setScannedData([]);
     } catch (error) {
@@ -44,19 +39,64 @@ export default function HistoryView() {
     }
   };
 
+
+
+
+  const HistoryResult = ({ean, name}) => {
+
+    const handlePress = async () => {
+      try {
+        const headers = {'Authorization' : 'Basic ' + API_AUTH}
+        const response = await fetch(`${API_URL}/search/${ean}`, {headers});
+
+        if (response.status = 200) {
+          const results = await response.json()
+          navigation.navigate("Results", {"results" : results});
+          return
+        }
+        alert("Tapahtui jokin virhe.");
+        return
+      } catch (error) {
+        console.error(error);
+      }
+    };
+
+    const removeAfterBar = (text) => {
+      const index = text.indexOf('|');
+      if (index !== -1) {
+        return text.slice(0, index);
+      }
+      return text;
+    }
+
+    return(
+      <View style={styles.historyContainer}>
+      <View style={styles.image}></View>
+      {(ean || name) && (
+        <View style={styles.details}>
+          <TouchableOpacity onPress={handlePress}>
+          <Text style={styles.product}>{removeAfterBar(name)}</Text>
+            <Text style={[styles.url, { textDecorationLine: 'underline' }]}>{}</Text>
+          <Text style={styles.price}></Text>
+          </TouchableOpacity>
+        </View>
+      )}
+    </View>
+    )
+  }
+
+
   return (
     <View style={styles.container}>
       <ScrollView contentContainerStyle={styles.contentContainer}>
-        {scannedData.map((data, index) => (
-          <View key={index}>
-            {data.map((obj, index2) => (
-              <View key={`${index}-${index2}`} style={styles.resultContainer}>
-                <Text>Name: {obj.Name}</Text>
-                <Text>Url: {obj.Url}</Text>
-              </View>
-            ))}
+        
+        
+        <View style={styles.resultContainer}>
+          {scannedData.map((result) => (
+            <HistoryResult name={result.name} ean={result.ean} key={result.ean}/>
+          ))}
           </View>
-        ))}
+
       </ScrollView>
       <TouchableOpacity style={styles.clearButton} onPress={clearAsyncStorage}>
         <Text style={styles.clearButtonText}>Clear History</Text>
@@ -93,5 +133,49 @@ const styles = StyleSheet.create({
     color: '#fff',
     fontWeight: 'bold',
     fontSize: 18,
+  },
+  resultContainer: {
+    marginVertical: 10,
+    padding: 10,
+    backgroundColor: '#00ced1',
+    borderRadius: 5
+  },
+  historyContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginHorizontal: 2,
+    marginVertical: 2,
+    borderRadius: 5,
+    backgroundColor: '#f2f2f2',
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.23,
+    shadowRadius: 2.62,
+    elevation: 4,
+    padding: 10,
+  },
+  image: {
+    width: 50,
+    height: 50,
+    backgroundColor: 'gray',
+    marginRight: 10,
+  },
+  details: {
+    flex: 1,
+    justifyContent: 'center',
+  },
+  product: {
+    textAlign: 'center',
+  },
+  url: {
+    textAlign: 'center',
+    marginTop: 5,
+  },
+  price: {
+    fontWeight: 'bold',
+    fontSize: 16,
   },
 });

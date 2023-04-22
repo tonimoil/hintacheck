@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleSheet, View, Text, Button, Linking } from 'react-native';
+import { StyleSheet, View, Text, Linking } from 'react-native';
 import { TouchableOpacity } from 'react-native';
 
 // TODO: linkit avautumaan sovelluksen sisäisesti?
@@ -34,12 +34,21 @@ export default function SearchResult({ product, url, price }) {
     }
   };
 
+  const removeAfterBar = (text) => {
+    const index = text.indexOf('|');
+    if (index !== -1) {
+      return text.slice(0, index);
+    }
+    return text;
+  }
+
   return (
     <View style={styles.container}>
       <View style={styles.image}></View>
       {(product || url) && (
         <View style={styles.details}>
-          <Text style={styles.product}>{product}</Text>
+          <Text style={styles.product}>{removeAfterBar(product)}</Text>
+          <Text style={styles.product}>Hinta: {price}</Text>
           <TouchableOpacity onPress={handlePress}>
             <Text style={[styles.url, { textDecorationLine: 'underline' }]}>{displayUrl()}</Text>
           </TouchableOpacity>

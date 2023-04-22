@@ -1,17 +1,15 @@
-import { StatusBar } from 'expo-status-bar';
-import { Button, Dimensions, StyleSheet, Text, View, TouchableOpacity } from 'react-native';
+import { Dimensions, StyleSheet, Text, View, TouchableOpacity } from 'react-native';
 import React from 'react';
 import { BarCodeScanner } from 'expo-barcode-scanner';
 import { useIsFocused } from '@react-navigation/native';
 import { API_URL, API_AUTH } from '@env';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 
-export default function Camera({ navigation }) {
+
+
+export default function Camera({ navigation, setMyArray, myArray }) {
   const [scannedData, setScannedData] = React.useState();
   const [loading, setLoading] = React.useState(false)
   const isFocused = useIsFocused();
-  const { width, height } = Dimensions.get('window');
-
 
   /**
    * Luetaan viivakoodi ja suoritetaan haku.
@@ -52,7 +50,7 @@ export default function Camera({ navigation }) {
   
   const handleSearch = async (searchValue) => {
     try {
-      setLoading(true)
+      setLoading(true)  
       const headers = {'Authorization' : 'Basic ' + API_AUTH}
       const response = await fetch(`${API_URL}/search/${searchValue}`, {headers});
 
@@ -72,35 +70,38 @@ export default function Camera({ navigation }) {
       }
 
       if (response.status = 200) {
-        const results = await response.json();
-        console.log(results)
-
-        // lajitellaan tuotteet hinnan mukaan
-        //const results = products.sort((a, b) => parseFloat(a.Hinta) - parseFloat(b.Hinta)); 
-
-        AsyncStorage.setItem(searchValue, JSON.stringify(results), (e)=> {
-          if(e){
-              console.log("Error: " + e);
-              throw e;
-          }
-          console.log("Succes!");
-        }).catch((e)=> {
-            console.log("Error is: " + e);
-        });
-
         try {
-          const value = await AsyncStorage.getItem(searchValue);
-          if (value !== null) {
-              // We have data!!
-              console.log("Data:");
-              console.log(JSON.parse(value));
+          const results = await response.json()
+
+          const index = myArray.findIndex((item) => item["ean"] === searchValue);
+
+          const newArray = [...myArray]
+
+          if (index >= 0) {
+            const itemToMove = newArray.splice(index, 1)[0];
+            newArray.unshift(itemToMove);
+            setMyArray(newArray)
+          } else {
+            const newObject = {"name" : results[0].name, "ean" : searchValue}
+            
+            if (newArray.length >= 10) {
+              newArray.pop()
+            }
+
+            newArray.unshift(newObject)
+            setMyArray(newArray);
           }
-      } catch (error) {
-          // Error retrieving data
-      }
-      AsyncStorage.setItem(searchValue, JSON.stringify(results));
-      navigation.navigate("Results", {"results" : results});
-        return  
+          
+          //Hack-ratkaisu, jotta saadaan queue:n pituus piilotettua. Renderöintiä varten.
+          const filtered_results = results.filter((item) => item.hasOwnProperty('name'))
+
+          navigation.navigate("Results", {"results" : filtered_results, "searchValue" : searchValue});
+          return
+        } catch (e) {
+          console.log(e)
+          alert("Tapahtui jokin virhe.");
+          return
+        }
       }
 
       alert("Tapahtui jokin virhe.");
@@ -133,7 +134,7 @@ export default function Camera({ navigation }) {
   //TODO: tyylittely kuntoon.
   return (
     <>
-    { loading ? <Text>Loading...</Text> :
+    { loading ? <View style={styles.loadingContainer}><Text style={styles.loadingtext}>Ladataan tietoja</Text></View> :
     <>
     {isFocused ? 
       <View style={{flex:1,backgroundColor:'white'}}>
@@ -178,6 +179,15 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(255, 255, 255, 0.5)',
     shadowColor: 'black',
     marginBottom: 32,
+  },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  loadingtext: {
+    fontWeight: 'bold',
+    fontSize: 14,
   },
 });
 
