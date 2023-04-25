@@ -138,7 +138,7 @@ export default function Camera({ navigation, setMyArray, myArray }) {
     <>
     {isFocused ? 
       <View style={{flex:1,backgroundColor:'white'}}>
-        <View style={{flex:1,alignItems:'center',justifyContent:'center',alignSelf:'stretch', backgroundColor: '#3FC3D2'}}>
+        <View style={{flex:1,alignItems:'center',justifyContent:'center',alignSelf:'stretch', backgroundColor: '#00ced1'}}>
           <BarCodeScanner style={{
             width: Dimensions.get('screen').width,
             height: Dimensions.get('screen').height,}} 
@@ -190,5 +190,3 @@ const styles = StyleSheet.create({
     fontSize: 14,
   },
 });
-
-
