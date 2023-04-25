@@ -49,7 +49,7 @@ export default function HistoryView({ navigation }) {
         const headers = {'Authorization' : 'Basic ' + API_AUTH}
         const response = await fetch(`${API_URL}/search/${ean}`, {headers});
 
-        if (response.status = 200) {
+        if (response.status === 200) {
           const results = await response.json()
           navigation.navigate("Results", {"results" : results});
           return
@@ -61,13 +61,19 @@ export default function HistoryView({ navigation }) {
       }
     };
 
+    
     const removeAfterBar = (text) => {
+      if (!text) {
+        return "";
+      }
       const index = text.indexOf('|');
       if (index !== -1) {
         return text.slice(0, index);
       }
       return text;
     }
+
+    
 
     return(
       <View style={styles.historyContainer}>
