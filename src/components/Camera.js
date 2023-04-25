@@ -10,6 +10,8 @@ export default function Camera({ navigation, setMyArray, myArray }) {
   const [scannedData, setScannedData] = React.useState();
   const [loading, setLoading] = React.useState(false)
   const isFocused = useIsFocused();
+  const [scannerKey, setScannerKey] = React.useState(0);
+
 
   /**
    * Luetaan viivakoodi ja suoritetaan haku.
@@ -56,6 +58,7 @@ export default function Camera({ navigation, setMyArray, myArray }) {
 
       if (response.status == 400) {
         alert("Viivakoodilla ei löytynyt tuloksia! Kokeile uudelleen.");
+        setScannedData(undefined);
         return
       }
 
@@ -96,15 +99,18 @@ export default function Camera({ navigation, setMyArray, myArray }) {
           const filtered_results = results.filter((item) => item.hasOwnProperty('name'))
 
           navigation.navigate("Results", {"results" : filtered_results, "searchValue" : searchValue});
+          setScannedData(undefined);
           return
         } catch (e) {
           console.log(e)
           alert("Tapahtui jokin virhe.");
+          setScannedData(undefined);
           return
         }
       }
 
       alert("Tapahtui jokin virhe.");
+      setScannedData(undefined);
       return
     } catch (error) {
       console.error(error);
@@ -124,37 +130,26 @@ export default function Camera({ navigation, setMyArray, myArray }) {
     );
   };
 
-  //useIsFocused, muuttujana isFocused on navigation-paketin funktio, jolla
-  //voidaan tarkistaa, onko "view"/"screen" fokusoitu. Kamera menee jostain
-  //syystä epäkuntoon ilman tätä tarkistusta. Näytetään camera view, jos on
-  //fokusoitu, palautetaan tyhjä view muussa tapauksessa. Ratkaisua ei ole
-  //sen kummemmin tarkasteltu.
-  //TODO: Onko ratkaisusta haittaa, ja selvitä toiminta tarkemmin.
-  //
-  //TODO: tyylittely kuntoon.
+ // Ilman isFocused.
+ // Tällä hetkellä nappi kokoajan näkyvissä.
+ // Hieman nopeampaa kameraan palaaminen toisesta näkymästä.
+ // Skannaaminen onnistuu, mutta kun toisesta näkymästä palataan kameraan
+ // ja painetaan skannaamista, niin kamera tarkentaa uudeelleen mikä hieman
+ // hidastaa skannaamista.
+
   return (
-    <>
-    { loading ? <View style={styles.loadingContainer}><Text style={styles.loadingtext}>Ladataan tietoja</Text></View> :
-    <>
-    {isFocused ? 
-      <View style={{flex:1,backgroundColor:'white'}}>
-        <View style={{flex:1,alignItems:'center',justifyContent:'center',alignSelf:'stretch', backgroundColor: '#00ced1'}}>
-          <BarCodeScanner style={{
-            width: Dimensions.get('screen').width,
-            height: Dimensions.get('screen').height,}} 
-            onBarCodeScanned={scannedData === undefined ? readBarCode : undefined}></BarCodeScanner>
-        </View>
-
-        <View >
-          {scannedData && <ScanButton onPress={() => setScannedData(undefined)}/>}
-        </View>
-
-      </View>
-    : null}
-    </>
-    }
-    </>
-    )
+    <View style={styles.container}>
+      <BarCodeScanner
+        key={scannerKey}
+        onBarCodeScanned={readBarCode}
+        style={StyleSheet.absoluteFillObject}
+      />
+    
+      <ScanButton onPress={() => setScannerKey(scannerKey + 1)} />
+      {scannedData && (setScannedData(undefined))}
+   
+    </View>
+  );
 }
 
 const styles = StyleSheet.create({
