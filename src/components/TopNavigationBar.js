@@ -31,12 +31,14 @@ const TopBar = () => {
       <MyProvider>
         <Tab.Navigator
           initialRouteName="Scanner"
+          //tabBarPosition="bottom"
           screenOptions={{
             tabBarActiveTintColor: "white",
             tabBarLabelStyle: { fontSize: 12 },
-            tabBarStyle: { backgroundColor: "#3FC3D2", marginTop: insets.top},
+            tabBarStyle: { backgroundColor: "#3FC3D2",marginTop: insets.top},
           }}
           >
+          
           <Tab.Screen name="Scanner" component={CameraView}  />
           <Tab.Screen name="Results" component={ResultsView} /> 
           <Tab.Screen name="History" component={HistoryView} />
