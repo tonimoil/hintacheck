@@ -34,7 +34,7 @@ const TopBar = () => {
           //tabBarPosition="bottom"
           screenOptions={{
             tabBarActiveTintColor: "white",
-            tabBarLabelStyle: { fontSize: 12 },
+            tabBarLabelStyle: { fontSize: 12 },// Jos koittaa palkkia alhaalla, niin poista; marginTop: insets.top
             tabBarStyle: { backgroundColor: "#3FC3D2",marginTop: insets.top},
           }}
           >
