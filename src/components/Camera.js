@@ -5,12 +5,10 @@ import { useIsFocused } from '@react-navigation/native';
 import { API_URL, API_AUTH } from '@env';
 
 
-
 export default function Camera({ navigation, setMyArray, myArray }) {
   const [scannedData, setScannedData] = React.useState();
   const [loading, setLoading] = React.useState(false)
   const isFocused = useIsFocused();
-  const [scannerKey, setScannerKey] = React.useState(0);
 
 
   /**
@@ -49,16 +47,15 @@ export default function Camera({ navigation, setMyArray, myArray }) {
     handleSearch(data);
   };
   
-  
   const handleSearch = async (searchValue) => {
     try {
       setLoading(true)  
       const headers = {'Authorization' : 'Basic ' + API_AUTH}
+
       const response = await fetch(`${API_URL}/search/${searchValue}`, {headers});
 
       if (response.status == 400) {
         alert("Viivakoodilla ei löytynyt tuloksia! Kokeile uudelleen.");
-        setScannedData(undefined);
         return
       }
 
@@ -76,6 +73,13 @@ export default function Camera({ navigation, setMyArray, myArray }) {
         try {
           const results = await response.json()
 
+          const products = results["results"]
+
+          if (products.length === 0) {
+            alert("Viivakoodilla ei löydy tuotteita");
+            return
+          }
+
           const index = myArray.findIndex((item) => item["ean"] === searchValue);
 
           const newArray = [...myArray]
@@ -85,7 +89,8 @@ export default function Camera({ navigation, setMyArray, myArray }) {
             newArray.unshift(itemToMove);
             setMyArray(newArray)
           } else {
-            const newObject = {"name" : results[0].name, "ean" : searchValue}
+
+            const newObject = {"name" : products[0].name, "ean" : searchValue}
             
             if (newArray.length >= 10) {
               newArray.pop()
@@ -94,23 +99,17 @@ export default function Camera({ navigation, setMyArray, myArray }) {
             newArray.unshift(newObject)
             setMyArray(newArray);
           }
-          
-          //Hack-ratkaisu, jotta saadaan queue:n pituus piilotettua. Renderöintiä varten.
-          const filtered_results = results.filter((item) => item.hasOwnProperty('name'))
 
-          navigation.navigate("Results", {"results" : filtered_results, "searchValue" : searchValue});
-          setScannedData(undefined);
+          navigation.navigate("Results", results);
           return
         } catch (e) {
           console.log(e)
           alert("Tapahtui jokin virhe.");
-          setScannedData(undefined);
           return
         }
       }
 
       alert("Tapahtui jokin virhe.");
-      setScannedData(undefined);
       return
     } catch (error) {
       console.error(error);
@@ -138,18 +137,28 @@ export default function Camera({ navigation, setMyArray, myArray }) {
  // hidastaa skannaamista.
 
   return (
-    <View style={styles.container}>
-      <BarCodeScanner
-        key={scannerKey}
-        onBarCodeScanned={readBarCode}
-        style={StyleSheet.absoluteFillObject}
-      />
-    
-      <ScanButton onPress={() => setScannerKey(scannerKey + 1)} />
-      {scannedData && (setScannedData(undefined))}
-   
-    </View>
-  );
+    <>
+    { loading ? <View style={styles.loadingContainer}><Text style={styles.loadingtext}>Ladataan tietoja</Text></View> :
+    <>
+    {isFocused ? 
+      <View style={{flex:1,backgroundColor:'white'}}>
+        <View style={{flex:1,alignItems:'center',justifyContent:'center',alignSelf:'stretch', backgroundColor: '#00ced1'}}>
+          <BarCodeScanner style={{
+            width: Dimensions.get('screen').width,
+            height: Dimensions.get('screen').height,}} 
+            onBarCodeScanned={scannedData === undefined ? readBarCode : undefined}></BarCodeScanner>
+        </View>
+
+        <View >
+          {scannedData && <ScanButton onPress={() => setScannedData(undefined)}/>}
+        </View>
+
+      </View>
+    : null}
+    </>
+    }
+    </>
+    )
 }
 
 const styles = StyleSheet.create({

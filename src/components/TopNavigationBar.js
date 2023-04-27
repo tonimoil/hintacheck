@@ -6,6 +6,7 @@ import HistoryView from '../views/HistoryView';
 import ResultsView from '../views/ResultsView';
 import CameraView from '../views/CameraView';
 import { MyProvider } from '../views/MyContext';
+import { StatusBar } from 'react-native';
 
 const Tab = createMaterialTopTabNavigator();
 
@@ -28,6 +29,7 @@ const TopBar = () => {
     const insets = useSafeAreaInsets();
   return (
     <NavigationContainer>
+      <StatusBar></StatusBar>
       <MyProvider>
         <Tab.Navigator
           initialRouteName="Scanner"

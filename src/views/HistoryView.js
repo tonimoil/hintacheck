@@ -51,7 +51,8 @@ export default function HistoryView({ navigation }) {
 
         if (response.status === 200) {
           const results = await response.json()
-          navigation.navigate("Results", {"results" : results});
+
+          navigation.navigate("Results",  results);
           return
         }
         alert("Tapahtui jokin virhe.");
@@ -74,16 +75,15 @@ export default function HistoryView({ navigation }) {
     }
 
     
+    //<View style={styles.image}></View>
 
     return(
       <View style={styles.historyContainer}>
-      <View style={styles.image}></View>
+      
       {(ean || name) && (
         <View style={styles.details}>
           <TouchableOpacity onPress={handlePress}>
           <Text style={styles.product}>{removeAfterBar(name)}</Text>
-            <Text style={[styles.url, { textDecorationLine: 'underline' }]}>{}</Text>
-          <Text style={styles.price}></Text>
           </TouchableOpacity>
         </View>
       )}
@@ -95,14 +95,11 @@ export default function HistoryView({ navigation }) {
   return (
     <View style={styles.container}>
       <ScrollView contentContainerStyle={styles.contentContainer}>
-        
-        
         <View style={styles.resultContainer}>
           {scannedData.map((result) => (
             <HistoryResult name={result.name} ean={result.ean} key={result.ean}/>
           ))}
           </View>
-
       </ScrollView>
       <TouchableOpacity style={styles.clearButton} onPress={clearAsyncStorage}>
         <Text style={styles.clearButtonText}>Clear History</Text>
@@ -120,8 +117,8 @@ const styles = StyleSheet.create({
     paddingBottom: 50,
   },
   resultContainer: {
-    marginVertical: 10,
-    padding: 10,
+    marginVertical: 5,
+    padding: 5,
     backgroundColor: '#f2f2f2',
     borderRadius: 5,
   },
@@ -141,8 +138,8 @@ const styles = StyleSheet.create({
     fontSize: 18,
   },
   resultContainer: {
-    marginVertical: 10,
-    padding: 10,
+    marginVertical: 5,
+    padding: 5,
     backgroundColor: '#00ced1',
     borderRadius: 5
   },
@@ -175,6 +172,15 @@ const styles = StyleSheet.create({
   },
   product: {
     textAlign: 'center',
+    padding: 5,
+    fontSize: 14,
+    fontWeight: 'bold',
+    color: '#333',
+    textAlign: 'center',
+    paddingHorizontal: 16,
+    textShadowColor: '#ccc',
+    textShadowOffset: { width: 0.5, height: 0.5 },
+    textShadowRadius: 0.5
   },
   url: {
     textAlign: 'center',

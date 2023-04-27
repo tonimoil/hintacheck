@@ -56,24 +56,11 @@ const defaultlogo = 'https://cdn-icons-png.flaticon.com/512/263/263142.png'
         return defaultlogo;
     }
   };
-  
-
-  const removeAfterBar = (text) => {
-    if (!text) {
-      return "";
-    }
-    const index = text.indexOf('|');
-    if (index !== -1) {
-      return text.slice(0, index);
-    }
-    return text;
-  }
 
   return (
     <View style={styles.container}>
       {(product || url) && (
         <View style={styles.details}>
-          <Text style={styles.product}>{removeAfterBar(product)}</Text>
           <TouchableOpacity onPress={handlePress}>
             <View style={styles.urlContainer}>
               <Image
@@ -102,17 +89,17 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginHorizontal: 2,
     marginVertical: 2,
-    borderRadius: 5,
+    borderRadius: 2,
     backgroundColor: '#f2f2f2',
     shadowColor: '#000',
     shadowOffset: {
       width: 0,
-      height: 2,
+      height: 1,
     },
     shadowOpacity: 0.23,
     shadowRadius: 2.62,
     elevation: 4,
-    padding: 10,
+    padding: 8,
   },
   details: {
     flex: 1,
@@ -123,22 +110,22 @@ const styles = StyleSheet.create({
   },
   url: {
     textAlign: 'center',
-    marginTop: 5,
+    marginTop: 0,
     fontWeight: 'bold'
   },
   price: {
     fontWeight: 'bold',
-    fontSize: 16,
+    fontSize: 18,
   },
   urlContainer: {
     flexDirection: 'row',
     justifyContent: 'center',
     alignItems: 'center',
-    marginTop: 5,
+    marginTop: 0,
   },
   logo: {
     width: 40,
     height: 40,
-    marginRight: 5,
+    marginRight: 20,
   },
 });

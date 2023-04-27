@@ -9,6 +9,7 @@ npm-debug.*
 *.mobileprovision
 *.orig.*
 web-build/
+ApiValues.js
 
 # macOS
 .DS_Store

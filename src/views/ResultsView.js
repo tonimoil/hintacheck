@@ -2,10 +2,12 @@ import React, { useState, useEffect } from 'react';
 import { Text, View, ScrollView, StyleSheet } from 'react-native';
 import { SearchResult } from '../components/index';
 import { API_URL, API_AUTH } from '@env';
+import Product from '../components/Product';
 
 export default function ResultsView ({ route }) {
   const [results, setResults] = useState([]);
   const [loading, setLoading] = useState(false)
+  const [image, setImage] = useState(null)
 
   const LoadingText = () => {
     const [dots, setDots] = useState(1);
@@ -29,59 +31,45 @@ export default function ResultsView ({ route }) {
   useEffect(() => { 
     if (route.params && route.params.results) {
       setResults(route.params.results);
-    } else {
+      setImage(route.params.metadata.image_url)
+    
+      if (route.params.metadata.price_searched === 1) {
+        setLoading(false)
+        return
+      }
+    }
+    else {
       return
     }
 
-    let timeoutId;
-    let fetchPrices = false;
-    let count = 0;
     setLoading(true)
+
+    const headers = {'Authorization' : 'Basic ' + API_AUTH}
+    const api_url = (`${API_URL}/priceinfo/${route.params.metadata.ean}`);
+
+    const fetchData = () => {
+      fetch(api_url, {
+        headers: headers})
+        .then(response => response.json())
+        .then(data => {
+          if (data.price_searched === 0) {
+            setTimeout(fetchData, 8000);
+          } else if (data.price_searched === 1) {
+            const search_url = (`${API_URL}/search/${route.params.metadata.ean}`);
+            fetch(search_url, {headers: headers}).then(res => res.json()).then(newdata => {
+              handleExit(newdata.results);
+            });
+          }
+        })
+        .catch(error => console.error(error));
+    }
+    
+    fetchData();
 
     const handleExit = (newData) => {
       setLoading(false)
       setResults(newData)
     }
-
-    const checkForUpdates = async () => {
-      try {
-        if(route.params.searchValue) {
-          const headers = {'Authorization' : 'Basic ' + API_AUTH}
-          const response = await fetch(`${API_URL}/search/${route.params.searchValue}`, {headers});
-          const data = await response.json();
-
-          //Hack-ratkaisu, että saadaan poistettua queue.
-          const filtered_results = data.filter((item) => item.hasOwnProperty('name'))
-
-          if (JSON.stringify(filtered_results) !== JSON.stringify(route.params.results)) {
-            handleExit(filtered_results)
-            clearTimeout(timeoutId);
-          }
-          count = count + 1;
-          timeoutId = setTimeout(checkForUpdates, 6000);
-        }
-
-        if (count === 3){
-          clearTimeout(timeoutId);
-        }
-
-      } catch (error) {
-        console.error('Error fetching price updates:', error);
-        timeoutId = setTimeout(checkForUpdates, 6000);
-      }
-    };
-
-    route.params.results.forEach((e) => {if (e.price === null){fetchPrices = true}})
-
-    if (fetchPrices) {
-      checkForUpdates();
-    } else {
-      setLoading(false)
-    }
-    
-    return () => {
-      clearTimeout(timeoutId);
-    };
 
   }, [route.params]);
 
@@ -89,9 +77,10 @@ export default function ResultsView ({ route }) {
     <View style={styles.container}>
       <ScrollView>
         {loading ? <LoadingText/> : <></>}
+        {results[0] ? <Product name={results[0].name} key={results[0].name} img_url={image}></Product> : <></>}
         {results.map((result, index) => (
           <View key={index} style={styles.resultContainer}>
-            <SearchResult product={result.name} url={result.url} key={result.name} price={result.price} />
+            <SearchResult url={result.url} key={result.name} price={result.price} />
           </View>
         ))}
       </ScrollView>
@@ -105,8 +94,8 @@ const styles = StyleSheet.create({
     backgroundColor: '#00ced1'
   },
   resultContainer: {
-    marginVertical: 10,
-    padding: 10,
+    marginVertical: 3,
+    padding: 7,
     backgroundColor: '#00ced1',
     borderRadius: 5
   },
