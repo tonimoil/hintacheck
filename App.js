@@ -1,21 +1,12 @@
 import React from 'react';
-import { NavigationContainer } from '@react-navigation/native';
-import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { BarCodeScanner } from 'expo-barcode-scanner';
-import { NoPermissions, CameraView, HistoryView, ResultsView } from './src/views/index';
+import { NoPermissions } from './src/views/index';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
+import TopBar from './src/components/TopNavigationBar';
 
-/**
- * TODO: puhelimeen varastoinnin tekeminen historiaa varten. Käytetään esimerkiksi
- * react-nativen AsyncStoragea https://reactnative.dev/docs/asyncstorage
- */
 export default function App() {
   const [permissions, setPermissions] = React.useState(false);
-  /**  
-   * Välilehtien toimintaa varten, kts. 
-   * https://reactnavigation.org/docs/getting-started/
-   */
-  const Stack = createNativeStackNavigator();
-
+  
   //Odotetaan lupia käyttäjältä kameran käyttöön.
   React.useEffect(() => {
     (async () => {
@@ -34,17 +25,12 @@ export default function App() {
      * permissions muttujan ollessa false, eli käyttäjä ei ole antanut
      * oikeuksia kameraan, käyttäjä ohjataan ei oikeuksia sivulle.
      */
-
-    <NavigationContainer>
-    {permissions ?
-    <Stack.Navigator screenOptions={{headerShown: true}}>
-      <Stack.Screen name="Camera" component={CameraView} />
-      <Stack.Screen name="History" component={HistoryView} />
-      <Stack.Screen name="Results" component={ResultsView} />
-    </Stack.Navigator>
-    :
-    <NoPermissions/> 
-    }
-  </NavigationContainer>
+    <SafeAreaProvider>
+      {permissions ?
+        <TopBar/>
+        :
+        <NoPermissions/> 
+      }
+    </SafeAreaProvider>
 );
 }

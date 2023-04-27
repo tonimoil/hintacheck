@@ -1,16 +1,15 @@
-import React from 'react';
-import { View } from 'react-native';
-import { TopNavigationBar, Camera } from '../components/index';
+import React, { useContext } from 'react';
+import { SafeAreaView } from 'react-native';
+import { Camera } from '../components/index';
+import { MyContext } from "./MyContext";
 
 export default function CameraView ({ navigation }) {
-  const buttons = [
-    { label: 'Historia', onPress: () => navigation.navigate("History") }
-  ];
+  const { myArray, setMyArray } = useContext(MyContext)
 
   return (
-    <View style={{flex:1,backgroundColor:'white'}}>
-      <TopNavigationBar buttons={buttons} />
-      <Camera navigation={navigation}/>
-    </View>
+    <SafeAreaView style={{flex:1,backgroundColor:'#3FC3D2'}}>
+      <Camera navigation={navigation} setMyArray={setMyArray} myArray={myArray}/>
+    </SafeAreaView>
   );
 };
+

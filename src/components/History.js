@@ -1,13 +1,16 @@
-import { Text, View, Button } from 'react-native';
+import React from 'react';
+import { View, Text } from 'react-native';
 
-export default function History( ) {
-    return (
-      <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
-        <Text>Historia</Text>
-        <Button
-          title="Siirry kameraan"
-          onPress={() => console.log("testi")}
-        />
-      </View>
-    );
+export default function History({ data }) {
+  return (
+    <View>
+      {data && data.map(item => (
+        <View key={item.id}>
+          <Text>{item.Name}</Text>
+          <Text>{item.Url}</Text>
+        </View>
+      ))}
+    </View>
+  );
 }
+

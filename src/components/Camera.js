@@ -1,15 +1,15 @@
-import { StatusBar } from 'expo-status-bar';
-import { Button, Dimensions, StyleSheet, Text, View } from 'react-native';
+import { Dimensions, StyleSheet, Text, View, TouchableOpacity } from 'react-native';
 import React from 'react';
 import { BarCodeScanner } from 'expo-barcode-scanner';
 import { useIsFocused } from '@react-navigation/native';
 import { API_URL, API_AUTH } from '@env';
 
-export default function Camera({ navigation }) {
+
+export default function Camera({ navigation, setMyArray, myArray }) {
   const [scannedData, setScannedData] = React.useState();
   const [loading, setLoading] = React.useState(false)
   const isFocused = useIsFocused();
-  const { width, height } = Dimensions.get('window');
+
 
   /**
    * Luetaan viivakoodi ja suoritetaan haku.
@@ -23,19 +23,35 @@ export default function Camera({ navigation }) {
    * @param {type} viivakoodin_tyyppi
    * @param {data} viivakoodin_data
    */
-  const readBarCode = ({type, data}) => {
-    if (type != 32) { 
-      alert("Viivakoodin tyyppi virheellinen tai skannaus ei onnistunut, kokeile uudelleen!");
-      return
+
+  
+  // tarkistaa, että skannattu koodi on tyyppiä ean13
+  // jos tyyppi on muu, tulee virheilmoitus
+  const readBarCode = ({ type, data }) => {
+    if (type !== BarCodeScanner.Constants.BarCodeType.ean13) {
+      setScannedData("error"); 
+      alert(
+        "Viivakoodin tyyppi virheellinen tai skannaus ei onnistunut",
+        "Kokeile uudelleen!",
+        [
+          {
+            text: "OK",
+            onPress: () => setScannedData(undefined),
+          },
+        ],
+        { cancelable: false }
+      );
+      return;
     }
     setScannedData(data);
     handleSearch(data);
   };
-
+  
   const handleSearch = async (searchValue) => {
     try {
-      setLoading(true)
+      setLoading(true)  
       const headers = {'Authorization' : 'Basic ' + API_AUTH}
+
       const response = await fetch(`${API_URL}/search/${searchValue}`, {headers});
 
       if (response.status == 400) {
@@ -54,13 +70,43 @@ export default function Camera({ navigation }) {
       }
 
       if (response.status = 200) {
-        const results = await response.json();
+        try {
+          const results = await response.json()
 
-        // lajitellaan tuotteet hinnan mukaan
-        //const results = products.sort((a, b) => parseFloat(a.Hinta) - parseFloat(b.Hinta)); 
+          const products = results["results"]
 
-        navigation.navigate("Results", {"results" : results});
-        return
+          if (products.length === 0) {
+            alert("Viivakoodilla ei löydy tuotteita");
+            return
+          }
+
+          const index = myArray.findIndex((item) => item["ean"] === searchValue);
+
+          const newArray = [...myArray]
+
+          if (index >= 0) {
+            const itemToMove = newArray.splice(index, 1)[0];
+            newArray.unshift(itemToMove);
+            setMyArray(newArray)
+          } else {
+
+            const newObject = {"name" : products[0].name, "ean" : searchValue}
+            
+            if (newArray.length >= 10) {
+              newArray.pop()
+            }
+
+            newArray.unshift(newObject)
+            setMyArray(newArray);
+          }
+
+          navigation.navigate("Results", results);
+          return
+        } catch (e) {
+          console.log(e)
+          alert("Tapahtui jokin virhe.");
+          return
+        }
       }
 
       alert("Tapahtui jokin virhe.");
@@ -71,29 +117,40 @@ export default function Camera({ navigation }) {
       setLoading(false)
     }
   }
- 
-  //useIsFocused, muuttujana isFocused on navigation-paketin funktio, jolla
-  //voidaan tarkistaa, onko "view"/"screen" fokusoitu. Kamera menee jostain
-  //syystä epäkuntoon ilman tätä tarkistusta. Näytetään camera view, jos on
-  //fokusoitu, palautetaan tyhjä view muussa tapauksessa. Ratkaisua ei ole
-  //sen kummemmin tarkasteltu.
-  //TODO: Onko ratkaisusta haittaa, ja selvitä toiminta tarkemmin.
-  //
-  //TODO: tyylittely kuntoon.
+
+  //Scan button
+  const ScanButton = ({ onPress }) => {
+    return (
+      <View style={styles.container}>
+      <TouchableOpacity onPress={onPress} style={styles.button}>
+        <View />
+      </TouchableOpacity>
+    </View>
+    );
+  };
+
+ // Ilman isFocused.
+ // Tällä hetkellä nappi kokoajan näkyvissä.
+ // Hieman nopeampaa kameraan palaaminen toisesta näkymästä.
+ // Skannaaminen onnistuu, mutta kun toisesta näkymästä palataan kameraan
+ // ja painetaan skannaamista, niin kamera tarkentaa uudeelleen mikä hieman
+ // hidastaa skannaamista.
+
   return (
     <>
-    { loading ? <Text>Loading...</Text> :
+    { loading ? <View style={styles.loadingContainer}><Text style={styles.loadingtext}>Ladataan tietoja</Text></View> :
     <>
     {isFocused ? 
       <View style={{flex:1,backgroundColor:'white'}}>
-        <View style={{flex:1,alignItems:'center',justifyContent:'center',alignSelf:'stretch'}}>
-          <BarCodeScanner style={{width: width*0.9, height: height*0.85}} onBarCodeScanned={scannedData ? undefined : readBarCode}></BarCodeScanner>
+        <View style={{flex:1,alignItems:'center',justifyContent:'center',alignSelf:'stretch', backgroundColor: '#00ced1'}}>
+          <BarCodeScanner style={{
+            width: Dimensions.get('screen').width,
+            height: Dimensions.get('screen').height,}} 
+            onBarCodeScanned={scannedData === undefined ? readBarCode : undefined}></BarCodeScanner>
         </View>
 
-        <StatusBar style='auto'/>
-
-        <View style={{justifyContent:'space-around'}}>
-          {scannedData && <Button title='Skannaa uudestaan?' onPress={() => setScannedData(undefined)}/>}
+        <View >
+          {scannedData && <ScanButton onPress={() => setScannedData(undefined)}/>}
         </View>
 
       </View>
@@ -103,9 +160,6 @@ export default function Camera({ navigation }) {
     </>
     )
 }
-
-
-
 
 const styles = StyleSheet.create({
   camera: {
@@ -117,9 +171,26 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     alignItems: 'center',
-    justifyContent: 'center',
+    justifyContent: 'flex-end',
     position: 'relative',
   },
+  button: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    width: 84,
+    height: 84,
+    borderRadius: 62,
+    backgroundColor: 'rgba(255, 255, 255, 0.5)',
+    shadowColor: 'black',
+    marginBottom: 32,
+  },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  loadingtext: {
+    fontWeight: 'bold',
+    fontSize: 14,
+  },
 });
-
-
